@@ -51,7 +51,7 @@ def cipher_generated_key(reader_address, process_instance_id, generated_ma_key):
 
         info = [generated_ma_key[i:i + 117] for i in range(0, len(generated_ma_key), 117)]
 
-        name_file = 'files/keys_readers/generated_key_ciphered_' + str(reader_address) + '_' \
+        name_file = 'files/authority4/generated_key_ciphered_' + str(reader_address) + '_' \
                     + str(process_instance_id) + '.txt'
 
         text_in_file = b''
