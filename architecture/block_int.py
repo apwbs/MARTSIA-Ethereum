@@ -268,3 +268,39 @@ def retrieve_users_attributes(process_instance_id):
     message_bytes = base64.b64decode(message)
     message = message_bytes.decode('ascii')
     return message
+
+
+def send_reader_public_key(reader_address, private_key, hash_file):
+    with open(compiled_contract_path1) as file:
+        contract_json = json.load(file)
+        contract_abi = contract_json['abi']
+
+    contract = web3.eth.contract(address=deployed_contract_address1, abi=contract_abi)
+
+    tx = {
+        'nonce': get_nonce(reader_address),
+        'gasPrice': web3.eth.gas_price,
+        'from': reader_address
+    }
+    message_bytes = hash_file.encode('ascii')
+    base64_bytes = base64.b64encode(message_bytes)
+    message = contract.functions.setPublicKeyReaders(reader_address, base64_bytes[:32], base64_bytes[32:])\
+        .buildTransaction(tx)
+    signed_transaction = web3.eth.account.sign_transaction(message, private_key)
+    transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
+    print(f'tx_hash: {web3.toHex(transaction_hash)}')
+    tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
+    # print(tx_receipt)
+
+
+def retrieve_reader_public_key(reader_address):
+    with open(compiled_contract_path1) as file:
+        contract_json = json.load(file)
+        contract_abi = contract_json['abi']
+
+    contract = web3.eth.contract(address=deployed_contract_address1, abi=contract_abi)
+
+    message = contract.functions.getPublicKeyReaders(reader_address).call()
+    message_bytes = base64.b64decode(message)
+    message = message_bytes.decode('ascii')
+    return message

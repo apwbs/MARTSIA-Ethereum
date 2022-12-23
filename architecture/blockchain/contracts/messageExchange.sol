@@ -3,6 +3,12 @@ pragma solidity >= 0.5.0 < 0.9.0;
 
 contract messageExchange {
 
+  struct publicKeyReader {
+    bytes32 hashPart1;
+    bytes32 hashPart2;
+  }
+  mapping (address =>  publicKeyReader) publicKeysReaders;
+
   struct publicKey {
     bytes32 hashPart1;
     bytes32 hashPart2;
@@ -20,6 +26,22 @@ contract messageExchange {
     bytes32 hashPart2;
   }
   mapping (uint64 => userAttributes) allUsers;
+
+  function setPublicKeyReaders(address _address, bytes32 _hash1, bytes32 _hash2) public {
+    publicKeysReaders[_address].hashPart1 = _hash1;
+    publicKeysReaders[_address].hashPart2 = _hash2;
+  }
+
+  function getPublicKeyReaders(address _address) public view returns (bytes memory) {
+    bytes32 p2 = publicKeysReaders[_address].hashPart1;
+    bytes32 p3 = publicKeysReaders[_address].hashPart2;
+    bytes memory joined = new bytes(64);
+    assembly {
+      mstore(add(joined, 32), p2)
+      mstore(add(joined, 64), p3)
+    }
+      return (joined);
+  }
 
   function setPublicKey(address _address, uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {
     publicKeys[_instanceID][_address].hashPart1 = _hash1;

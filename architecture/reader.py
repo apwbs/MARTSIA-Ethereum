@@ -119,6 +119,6 @@ if __name__ == '__main__':
     process_instance_id = 9325236771567211612
 
     # generate_public_parameters(process_instance_id)
-    message_id = 3430551454193245261
-    slice_id = 3631045116664578856
+    message_id = 12990717557941230051
+    slice_id = 9522254365290608874
     main(groupObj, maabe, process_instance_id, message_id, slice_id)
