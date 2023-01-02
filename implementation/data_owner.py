@@ -72,7 +72,7 @@ def retrieve_public_parameters(process_instance_id):
     return public_parameters
 
 
-def main(groupObj, maabe, api, process_instance_id):
+def main(process_instance_id):
     response = retrieve_public_parameters(process_instance_id)
     public_parameters = bytesToObject(response, groupObj)
     H = lambda x: self.group.hash(x, G2)
@@ -101,15 +101,23 @@ def main(groupObj, maabe, api, process_instance_id):
 
     f = open('files/data.json')
     data = json.load(f)
-    access_policy = [
-        '(9325236771567211612@UT and 9325236771567211612@OU and 9325236771567211612@OT and 9325236771567211612@TU) '
-        'and (MANUFACTURER@UT or SUPPLIER@OU)',
-        '(9325236771567211612@UT and 9325236771567211612@OU and 9325236771567211612@OT and 9325236771567211612@TU) '
-        'and (MANUFACTURER@UT or (SUPPLIER@OU and ELECTRONICS@OT)',
-        '(9325236771567211612@UT and 9325236771567211612@OU and 9325236771567211612@OT and 9325236771567211612@TU) '
-        'and (MANUFACTURER@UT or (SUPPLIER@OU and MECHANICS@TU)']
+    # access_policy = ['(1387640806@UT and 1387640806@OU and 1387640806@OT and 1387640806@TU) and (MANUFACTURER@UT or '
+    #                  'SUPPLIER@OU)',
+    #                  '(1387640806@UT and 1387640806@OU and 1387640806@OT and 1387640806@TU) and (MANUFACTURER@UT or ('
+    #                  'SUPPLIER@OU and ELECTRONICS@OT)',
+    #                  '(1387640806@UT and 1387640806@OU and 1387640806@OT and 1387640806@TU) and (MANUFACTURER@UT or ('
+    #                  'SUPPLIER@OU and MECHANICS@TU)']
+    #
+    # entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
 
-    entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
+    access_policy = ['(1387640806@UT and 1387640806@OU and 1387640806@OT and 1387640806@TU) and (MANUFACTURER@UT or '
+                     'SUPPLIER@OU)']
+
+    entries = [list(data.keys())]
+
+    if len(access_policy) != len(entries):
+        print('ERROR: The number of policies and entries is different')
+        exit()
 
     keys = []
     header = []
@@ -123,14 +131,18 @@ def main(groupObj, maabe, api, process_instance_id):
         ciphered_key_bytes = objectToBytes(ciphered_key, groupObj)
         ciphered_key_bytes_string = ciphered_key_bytes.decode('utf-8')
 
-        now = datetime.now()
-        now = int(now.strftime("%Y%m%d%H%M%S%f"))
-        random.seed(now)
-        slice_id = random.randint(1, 2 ** 64)
-        print(f'slice id {i}: {slice_id}')
-
-        dict_pol = {'Slice_id': slice_id, 'CipheredKey': ciphered_key_bytes_string, 'Fields': entries[i]}
-        header.append(dict_pol)
+        ## Possibility to clean the code here. This check can be done outside the 'for loop'
+        if len(access_policy) == len(entries) == 1:
+            dict_pol = {'CipheredKey': ciphered_key_bytes_string, 'Fields': entries[i]}
+            header.append(dict_pol)
+        else:
+            now = datetime.now()
+            now = int(now.strftime("%Y%m%d%H%M%S%f"))
+            random.seed(now)
+            slice_id = random.randint(1, 2 ** 64)
+            dict_pol = {'Slice_id': slice_id, 'CipheredKey': ciphered_key_bytes_string, 'Fields': entries[i]}
+            print(f'slice id {i}: {slice_id}')
+            header.append(dict_pol)
 
     json_file_ciphered = {}
     for i, entry in enumerate(entries):
@@ -171,4 +183,4 @@ if __name__ == '__main__':
     process_instance_id = int(process_instance_id_env)
 
     # generate_pp_pk(process_instance_id)
-    main(groupObj, maabe, api, process_instance_id)
+    main(process_instance_id)
