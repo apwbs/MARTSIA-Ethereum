@@ -230,7 +230,9 @@ def retrieve_MessageIPFSLink(message_id):
 
     message = contract.functions.getIPFSLink(int(message_id)).call()
     message_bytes = base64.b64decode(message)
+
     message = message_bytes.decode('ascii')
+
     return message
 
 

@@ -62,7 +62,21 @@ def retrieve_public_parameters(process_instance_id):
     return public_parameters
 
 
-def main(groupObj, maabe, process_instance_id, message_id, slice_id):
+def actual_decryption(remaining, public_parameters, user_sk, ciphertext_dict):
+    test = remaining['CipheredKey'].encode('utf-8')
+
+    ct = bytesToObject(test, groupObj)
+    v2 = maabe.decrypt(public_parameters, user_sk, ct)
+    v2 = groupObj.serialize(v2)
+
+    dec_field = [cryptocode.decrypt(remaining['Fields'][x], str(v2)) for x in
+                 range(len(remaining['Fields']))]
+    decoded = [cryptocode.decrypt(ciphertext_dict['body'][x], str(v2)) for x in remaining['Fields']]
+    decoded_final = zip(dec_field, decoded)
+    print(dict(decoded_final))
+
+
+def main(process_instance_id, message_id, slice_id):
     response = retrieve_public_parameters(process_instance_id)
     public_parameters = bytesToObject(response, groupObj)
     H = lambda x: self.group.hash(x, G2)
@@ -96,19 +110,12 @@ def main(groupObj, maabe, process_instance_id, message_id, slice_id):
     if ciphertext_dict['metadata']['process_instance_id'] == int(process_instance_id) \
             and ciphertext_dict['metadata']['message_id'] == message_id:
         slice_check = ciphertext_dict['header']
-        for remaining in slice_check:
-            if remaining['Slice_id'] == slice_id:
-                test = remaining['CipheredKey'].encode('utf-8')
-
-                ct = bytesToObject(test, groupObj)
-                v2 = maabe.decrypt(public_parameters, user_sk, ct)
-                v2 = groupObj.serialize(v2)
-
-                dec_field = [cryptocode.decrypt(remaining['Fields'][x], str(v2)) for x in
-                             range(len(remaining['Fields']))]
-                decoded = [cryptocode.decrypt(ciphertext_dict['body'][x], str(v2)) for x in remaining['Fields']]
-                decoded_final = zip(dec_field, decoded)
-                print(dict(decoded_final))
+        if len(slice_check) == 1:
+            actual_decryption(ciphertext_dict['header'][0], public_parameters, user_sk, ciphertext_dict)
+        elif len(slice_check) > 1:
+            for remaining in slice_check:
+                if remaining['Slice_id'] == slice_id:
+                    actual_decryption(remaining, public_parameters, user_sk, ciphertext_dict)
 
 
 if __name__ == '__main__':
@@ -119,6 +126,6 @@ if __name__ == '__main__':
     process_instance_id = 9325236771567211612
 
     # generate_public_parameters(process_instance_id)
-    message_id = 3430551454193245261
-    slice_id = 3631045116664578856
-    main(groupObj, maabe, process_instance_id, message_id, slice_id)
+    message_id = 418389490125396709
+    slice_id = 7175128139752816935
+    main(process_instance_id, message_id, slice_id)
