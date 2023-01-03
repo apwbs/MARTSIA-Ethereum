@@ -110,8 +110,9 @@ def main(groupObj, maabe, api, process_instance_id):
     #
     # entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
 
-    access_policy = ['(1387640806@UT and 1387640806@OU and 1387640806@OT and 1387640806@TU) and (MANUFACTURER@UT or '
-                     'SUPPLIER@OU)']
+    access_policy = ['(6379627265815999091@UT and 6379627265815999091@OU '
+                     'and 6379627265815999091@OT and 6379627265815999091@TU) '
+                     'and (MANUFACTURER@UT or SUPPLIER@OU)']
 
     entries = [list(data.keys())]
 
@@ -158,7 +159,8 @@ def main(groupObj, maabe, api, process_instance_id):
     now = int(now.strftime("%Y%m%d%H%M%S%f"))
     random.seed(now)
     message_id = random.randint(1, 2 ** 64)
-    metadata = {'process_instance_id': int(process_instance_id), 'message_id': message_id}
+    metadata = {'sender': dataOwner_address, 'process_instance_id': int(process_instance_id),
+                'message_id': message_id}
     print(f'message id: {message_id}')
 
     json_total = {'metadata': metadata, 'header': header, 'body': json_file_ciphered}

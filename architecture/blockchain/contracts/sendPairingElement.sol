@@ -41,9 +41,9 @@ contract sendPairingElement {
   }
   mapping (uint64 => mapping (address => publicParameters)) parameters;
 
-  function setAuthoritiesNames(address _address, uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {
-    authoritiesName[_instanceID][_address].hashPart1 = _hash1;
-    authoritiesName[_instanceID][_address].hashPart2 = _hash2;
+  function setAuthoritiesNames(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {
+    authoritiesName[_instanceID][msg.sender].hashPart1 = _hash1;
+    authoritiesName[_instanceID][msg.sender].hashPart2 = _hash2;
   }
 
   function getAuthoritiesNames(address _address, uint64 _instanceID) public view returns (bytes memory) {
@@ -57,11 +57,11 @@ contract sendPairingElement {
     return joined;
   }
 
-  function setElementHashed(address _address, uint64 _instanceID, bytes32 _hash1, bytes32 _hash2, bytes32 _hash3, bytes32 _hash4) public {
-    firstGHashed[_instanceID][_address].hashPart1 = _hash1;
-    firstGHashed[_instanceID][_address].hashPart2 = _hash2;
-    secondGHashed[_instanceID][_address].hashPart1 = _hash3;
-    secondGHashed[_instanceID][_address].hashPart2 = _hash4;
+  function setElementHashed(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2, bytes32 _hash3, bytes32 _hash4) public {
+    firstGHashed[_instanceID][msg.sender].hashPart1 = _hash1;
+    firstGHashed[_instanceID][msg.sender].hashPart2 = _hash2;
+    secondGHashed[_instanceID][msg.sender].hashPart1 = _hash3;
+    secondGHashed[_instanceID][msg.sender].hashPart2 = _hash4;
   }
 
   function getElementHashed(address _address, uint64 _instanceID) public view returns (bytes memory, bytes memory) {
@@ -82,13 +82,13 @@ contract sendPairingElement {
     return (joined, joinedsec);
   }
 
-  function setElement(address _address, uint64 _instanceID, bytes32 _hash1, bytes32 _hash2, bytes32 _hash3, bytes32 _hash4, bytes32 _hash5, bytes32 _hash6) public {
-    firstG[_instanceID][_address].hashPart1 = _hash1;
-    firstG[_instanceID][_address].hashPart2 = _hash2;
-    firstG[_instanceID][_address].hashPart3 = _hash3;
-    secondG[_instanceID][_address].hashPart1 = _hash4;
-    secondG[_instanceID][_address].hashPart2 = _hash5;
-    secondG[_instanceID][_address].hashPart3 = _hash6;
+  function setElement(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2, bytes32 _hash3, bytes32 _hash4, bytes32 _hash5, bytes32 _hash6) public {
+    firstG[_instanceID][msg.sender].hashPart1 = _hash1;
+    firstG[_instanceID][msg.sender].hashPart2 = _hash2;
+    firstG[_instanceID][msg.sender].hashPart3 = _hash3;
+    secondG[_instanceID][msg.sender].hashPart1 = _hash4;
+    secondG[_instanceID][msg.sender].hashPart2 = _hash5;
+    secondG[_instanceID][msg.sender].hashPart3 = _hash6;
   }
 
   function getElement(address _address, uint64 _instanceID) public view returns (bytes memory, bytes32, bytes memory, bytes32) {
@@ -112,9 +112,9 @@ contract sendPairingElement {
     return (joined, p3, joinedsec, p6);
   }
 
-  function setPublicParameters(address _address, uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {
-    parameters[_instanceID][_address].hashPart1 = _hash1;
-    parameters[_instanceID][_address].hashPart2 = _hash2;
+  function setPublicParameters(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {
+    parameters[_instanceID][msg.sender].hashPart1 = _hash1;
+    parameters[_instanceID][msg.sender].hashPart2 = _hash2;
   }
 
   function getPublicParameters(address _address, uint64 _instanceID) public view returns (bytes memory) {

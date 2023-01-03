@@ -47,8 +47,8 @@ def send(msg):
             text_file.write(receive)
 
 
-reader_address = '0x9e7767d3753DBA2B546f93E8b20802162d88C885'
-process_instance_id = 9325236771567211612
+reader_address = '0x826cBc23f60f256D9CCB9286b25409edC2b91332'
+process_instance_id = 6379627265815999091
 gid = "bob"
 # send("Auth1 - Generate your part of my key||" + gid + '||' + str(process_instance_id) + '||' + reader_address)
 # send("Auth2 - Generate your part of my key||" + gid + '||' + str(process_instance_id) + '||' + reader_address)

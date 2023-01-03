@@ -10,6 +10,7 @@ contract messageExchange {
   mapping (uint64 => mapping (address =>  publicKey)) publicKeys;
 
   struct IPFSCiphertext {
+    address sender;
     bytes32 hashPart1;
     bytes32 hashPart2;
   }
@@ -21,9 +22,9 @@ contract messageExchange {
   }
   mapping (uint64 => userAttributes) allUsers;
 
-  function setPublicKey(address _address, uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {
-    publicKeys[_instanceID][_address].hashPart1 = _hash1;
-    publicKeys[_instanceID][_address].hashPart2 = _hash2;
+  function setPublicKey(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {
+    publicKeys[_instanceID][msg.sender].hashPart1 = _hash1;
+    publicKeys[_instanceID][msg.sender].hashPart2 = _hash2;
   }
 
   function getPublicKey(address _address, uint64 _instanceID) public view returns (bytes memory) {
@@ -38,11 +39,13 @@ contract messageExchange {
   }
 
   function setIPFSLink(uint64 _messageID, bytes32 _hash1, bytes32 _hash2) public {
+    allLinks[_messageID].sender = msg.sender;
     allLinks[_messageID].hashPart1 = _hash1;
     allLinks[_messageID].hashPart2 = _hash2;
   }
 
-  function getIPFSLink(uint64 _messageID) public view returns (bytes memory) {
+  function getIPFSLink(uint64 _messageID) public view returns (address, bytes memory) {
+    address sender = allLinks[_messageID].sender;
     bytes32 p1 = allLinks[_messageID].hashPart1;
     bytes32 p2 = allLinks[_messageID].hashPart2;
     bytes memory joined = new bytes(64);
@@ -50,7 +53,7 @@ contract messageExchange {
       mstore(add(joined, 32), p1)
       mstore(add(joined, 64), p2)
     }
-    return joined;
+    return (sender, joined);
   }
 
   function setUserAttributes(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {

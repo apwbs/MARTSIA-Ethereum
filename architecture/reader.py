@@ -104,11 +104,14 @@ def main(process_instance_id, message_id, slice_id):
     user_sk = {'GID': 'bob', 'keys': merge_dicts(user_sk1, user_sk2, user_sk3, user_sk4)}
 
     # decrypt
-    ciphertext_link = block_int.retrieve_MessageIPFSLink(message_id)
+    response = block_int.retrieve_MessageIPFSLink(message_id)
+    ciphertext_link = response[0]
     getfile = api.cat(ciphertext_link)
     ciphertext_dict = json.loads(getfile)
+    sender = response[1]
     if ciphertext_dict['metadata']['process_instance_id'] == int(process_instance_id) \
-            and ciphertext_dict['metadata']['message_id'] == message_id:
+            and ciphertext_dict['metadata']['message_id'] == message_id \
+            and ciphertext_dict['metadata']['sender'] == sender:
         slice_check = ciphertext_dict['header']
         if len(slice_check) == 1:
             actual_decryption(ciphertext_dict['header'][0], public_parameters, user_sk, ciphertext_dict)
@@ -123,9 +126,9 @@ if __name__ == '__main__':
     maabe = MaabeRW15(groupObj)
     api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
-    process_instance_id = 9325236771567211612
+    process_instance_id = 6379627265815999091
 
     # generate_public_parameters(process_instance_id)
-    message_id = 418389490125396709
-    slice_id = 7175128139752816935
+    message_id = 7779109622797410784
+    slice_id = 7779109622797410784
     main(process_instance_id, message_id, slice_id)
