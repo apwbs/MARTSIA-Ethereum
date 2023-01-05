@@ -101,20 +101,23 @@ def main(groupObj, maabe, api, process_instance_id):
 
     f = open('files/data.json')
     data = json.load(f)
-    # access_policy = ['(1387640806@UT and 1387640806@OU and 1387640806@OT and 1387640806@TU) and (MANUFACTURER@UT or '
-    #                  'SUPPLIER@OU)',
-    #                  '(1387640806@UT and 1387640806@OU and 1387640806@OT and 1387640806@TU) and (MANUFACTURER@UT or ('
-    #                  'SUPPLIER@OU and ELECTRONICS@OT)',
-    #                  '(1387640806@UT and 1387640806@OU and 1387640806@OT and 1387640806@TU) and (MANUFACTURER@UT or ('
-    #                  'SUPPLIER@OU and MECHANICS@TU)']
+    access_policy = ['(6029956255136507926@UT and 6029956255136507926@OU and 6029956255136507926@OT and '
+                     '6029956255136507926@TU) and (MANUFACTURER@UT or '
+                     'SUPPLIER@OU)',
+                     '(6029956255136507926@UT and 6029956255136507926@OU and 6029956255136507926@OT and '
+                     '6029956255136507926@TU) and (MANUFACTURER@UT or ('
+                     'SUPPLIER@OU and ELECTRONICS@OT)',
+                     '(6029956255136507926@UT and 6029956255136507926@OU and 6029956255136507926@OT and '
+                     '6029956255136507926@TU) and (MANUFACTURER@UT or ('
+                     'SUPPLIER@OU and MECHANICS@TU)']
+
+    entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
+
+    # access_policy = ['(6379627265815999091@UT and 6379627265815999091@OU '
+    #                  'and 6379627265815999091@OT and 6379627265815999091@TU) '
+    #                  'and (MANUFACTURER@UT or SUPPLIER@OU)']
     #
-    # entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
-
-    access_policy = ['(6379627265815999091@UT and 6379627265815999091@OU '
-                     'and 6379627265815999091@OT and 6379627265815999091@TU) '
-                     'and (MANUFACTURER@UT or SUPPLIER@OU)']
-
-    entries = [list(data.keys())]
+    # entries = [list(data.keys())]
 
     if len(access_policy) != len(entries):
         print('ERROR: The number of policies and entries is different')

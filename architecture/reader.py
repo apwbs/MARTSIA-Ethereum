@@ -126,9 +126,9 @@ if __name__ == '__main__':
     maabe = MaabeRW15(groupObj)
     api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
-    process_instance_id = 6379627265815999091
+    process_instance_id = 6029956255136507926
 
     # generate_public_parameters(process_instance_id)
-    message_id = 7779109622797410784
-    slice_id = 7779109622797410784
+    message_id = 16976361480923963263
+    slice_id = 4995486446972776501
     main(process_instance_id, message_id, slice_id)
