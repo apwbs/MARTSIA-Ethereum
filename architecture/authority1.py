@@ -67,6 +67,7 @@ def initial_parameters(process_instance_id):
     g1_1_bytes = result[0][1]
     g2_1_bytes = result[0][2]
 
+    # if we want to save gas, we can put the values in an IPFS file and store its link instead of the values in plain
     block_int.sendElements(authority1_address, authority1_private_key, process_instance_id, (g1_1_bytes, g2_1_bytes))
 
 
@@ -179,11 +180,11 @@ def main():
     api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
     process_instance_id = int(process_instance_id_env)
 
-    save_authorities_names(api, process_instance_id)
+    # save_authorities_names(api, process_instance_id)
     # initial_parameters_hashed(groupObj, process_instance_id)
     # initial_parameters(process_instance_id)
     # generate_public_parameters(groupObj, maabe, api, process_instance_id)
-    # generate_pk_sk(groupObj, maabe, api, process_instance_id)
+    generate_pk_sk(groupObj, maabe, api, process_instance_id)
 
     # test = api.name.publish('/ipfs/' + hash_file)
     # print(test)
