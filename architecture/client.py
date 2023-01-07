@@ -75,28 +75,21 @@ def send(msg):
 manufacturer = config('DATAOWNER_MANUFACTURER_ADDRESS')
 electronics = config('READER_ADDRESS_SUPPLIER1')
 mechanics = config('READER_ADDRESS_SUPPLIER2')
+process_instance_id_env = config('PROCESS_INSTANCE_ID')
 
-reader_address = mechanics
-process_instance_id = 6029956255136507926
+reader_address = electronics
+process_instance_id = int(process_instance_id_env)
 gid = "bob"
 
-authority = 'Auth4'
+authority = 'Auth-1'
 
-# send("Auth1 - Start handshake||" + reader_address)
-# send("Auth2 - Start handshake||" + reader_address)
-# send("Auth3 - Start handshake||" + reader_address)
-# send("Auth4 - Start handshake||" + reader_address)
+send(authority + " - Start handshake||" + str(process_instance_id) + '||' + reader_address)
 
-signature_sending = sign_number(authority)
+# signature_sending = sign_number(authority)
 
-# send("Auth1 - Generate your part of my key||" + gid + '||' + str(process_instance_id) + '||' + reader_address + '||' +
-#      str(signature_sending))
-# send("Auth2 - Generate your part of my key||" + gid + '||' + str(process_instance_id) + '||' + reader_address + '||' +
-#      str(signature_sending))
-# send("Auth3 - Generate your part of my key||" + gid + '||' + str(process_instance_id) + '||' + reader_address + '||' +
-#      str(signature_sending))
-send("Auth4 - Generate your part of my key||" + gid + '||' + str(process_instance_id) + '||' + reader_address + '||' +
-     str(signature_sending))
+# send(authority + " - Generate your part of my key||" + gid + '||' + str(process_instance_id) + '||' + reader_address
+#      + '||' + str(signature_sending))
+
 # exit()
 # input()
 

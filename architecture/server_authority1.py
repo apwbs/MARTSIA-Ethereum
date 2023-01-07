@@ -7,6 +7,7 @@ from hashlib import sha512
 import block_int
 import authority1_keygeneration
 import ipfshttpclient
+import sqlite3
 
 api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
@@ -40,28 +41,39 @@ def generate_key_auth1(gid, process_instance_id, reader_address):
     return authority1_keygeneration.generate_user_key(gid, process_instance_id, reader_address)
 
 
-def generate_number_to_sign(reader_address):
+def generate_number_to_sign(process_instance_id, reader_address):
+    # Connection to SQLite3 authority1 database
+    connection = sqlite3.connect('files/authority1/authority1.db')
+    x = connection.cursor()
+
     now = datetime.now()
     now = int(now.strftime("%Y%m%d%H%M%S%f"))
     random.seed(now)
     number_to_sign = random.randint(1, 2 ** 64)
-    with open('files/authority1/handshake_' + str(reader_address) + '.txt', "w") as text_file:
-        text_file.write(str(number_to_sign))
+    x.execute("INSERT OR IGNORE INTO handshake_numbers VALUES (?,?,?)",
+              (process_instance_id, reader_address, str(number_to_sign)))
+    connection.commit()
     return number_to_sign
 
 
-def check_handshake(reader_address, signature):
-    with open('files/authority1/handshake_' + str(reader_address) + '.txt', 'r') as r:
-        number_to_sign = r.read()
-    msg = number_to_sign.encode()
+def check_handshake(process_instance_id, reader_address, signature):
+    # Connection to SQLite3 authority1 database
+    connection = sqlite3.connect('files/authority1/authority1.db')
+    x = connection.cursor()
+
+    x.execute("SELECT * FROM handshake_numbers WHERE process_instance=? AND reader_address=?",
+              (process_instance_id, reader_address))
+    result = x.fetchall()
+    number_to_sign = result[0][2]
+    msg = str(number_to_sign).encode()
     public_key_ipfs_link = block_int.retrieve_publicKey_readers(reader_address)
     getfile = api.cat(public_key_ipfs_link)
     getfile = getfile.split(b'###')
-    private_key_n = int(getfile[1])
-    private_key_e = int(getfile[2])
+    public_key_n = int(getfile[1].decode('utf-8'))
+    public_key_e = int(getfile[2].decode('utf-8').rstrip('"'))
     if getfile[0].split(b': ')[1].decode('utf-8') == reader_address:
         hash = int.from_bytes(sha512(msg).digest(), byteorder='big')
-        hashFromSignature = pow(int(signature), private_key_e, private_key_n)
+        hashFromSignature = pow(int(signature), public_key_e, public_key_n)
         print("Signature valid:", hash == hashFromSignature)
         return hash == hashFromSignature
 
@@ -86,11 +98,11 @@ def handle_client(conn, addr):
             # print(f"[{addr}] {msg}")
             # conn.send("Msg received!".encode(FORMAT))
             message = msg.split('||')
-            if message[0] == "Auth1 - Start handshake":
-                number_to_sign = generate_number_to_sign(message[1])
+            if message[0] == "Auth-1 - Start handshake":
+                number_to_sign = generate_number_to_sign(message[1], message[2])
                 conn.send(b'number to sign: ' + str(number_to_sign).encode())
-            if message[0] == "Auth1 - Generate your part of my key":
-                if check_handshake(message[3], message[4]):
+            if message[0] == "Auth-1 - Generate your part of my key":
+                if check_handshake(message[2], message[3], message[4]):
                     user_sk1 = generate_key_auth1(message[1], message[2], message[3])
                     conn.send(user_sk1)
 
