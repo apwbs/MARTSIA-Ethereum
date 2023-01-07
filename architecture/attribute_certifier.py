@@ -23,11 +23,13 @@ x = conn.cursor()
 
 
 def generate_attributes():
-    now = datetime.now()
-    now = int(now.strftime("%Y%m%d%H%M%S%f"))
-    random.seed(now)
-    process_instance_id = random.randint(1, 2 ** 64)
-    print(f'process instance id: {process_instance_id}')
+    # now = datetime.now()
+    # now = int(now.strftime("%Y%m%d%H%M%S%f"))
+    # random.seed(now)
+    # process_instance_id = random.randint(1, 2 ** 64)
+    # print(f'process instance id: {process_instance_id}')
+
+    process_instance_id = 8785437525079851029
 
     dict_users = {
         manufacturer_address: [str(process_instance_id) + '@UT', str(process_instance_id) + '@OU',
@@ -43,26 +45,21 @@ def generate_attributes():
     }
 
     f = io.StringIO()
-    f.write(str(dict_users))
+    dict_users_dumped = json.dumps(dict_users)
+    f.write('"process_instance_id": ' + str(process_instance_id) + '####')
+    f.write(dict_users_dumped)
     f.seek(0)
 
     file_to_str = f.read()
 
     hash_file = api.add_json(file_to_str)
-    print(hash_file)
+    print(f'ipfs hash: {hash_file}')
+    # QmYQ6keiivpFrVbnDRPp5hLJGMAe3JhyqwV5gaUxzuNnMj
 
     x.execute("INSERT OR IGNORE INTO user_attributes VALUES (?,?,?)", (process_instance_id, hash_file, file_to_str))
     conn.commit()
 
     block_int.send_users_attributes(attribute_certifier_address, private_key, process_instance_id, hash_file)
-
-    # dict_users_dumped = json.dumps(dict_users)
-    # name_file = 'files/users_attributes.txt'
-    # with open(name_file, 'w') as ua:
-    #     ua.write('"process_instance_id": ' + str(process_instance_id) + '\n')
-    #     ua.write(dict_users_dumped)
-    # new_file = api.add(name_file)
-    # hash_file = new_file['Hash']
 
 
 if __name__ == "__main__":
