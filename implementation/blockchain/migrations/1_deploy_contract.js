@@ -1,5 +1,5 @@
-var sendPairingElement = artifacts.require("sendPairingElement");
+var MARTSIAEth2 = artifacts.require("MARTSIAEth2");
 
 module.exports = function(deployer) {
-    deployer.deploy(sendPairingElement);
+    deployer.deploy(MARTSIAEth2);
 };
