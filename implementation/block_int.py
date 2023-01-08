@@ -3,11 +3,9 @@ from decouple import config
 import json
 import base64
 
-web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/55aa0d95a9be4261b3c676315d6abc7e"))
-compiled_contract_path = 'blockchain/build/contracts/sendPairingElement.json'
-deployed_contract_address = config('CONTRACT_ADDRESS')
-compiled_contract_path1 = 'blockchain/build/contracts/messageExchange.json'
-deployed_contract_address1 = config('CONTRACT_ADDRESS1')
+web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
+compiled_contract_path = 'blockchain/build/contracts/MARTSIAEth.json'
+deployed_contract_address = config('CONTRACT_ADDRESS_MARTSIA')
 
 
 def get_nonce(ETH_address):
@@ -28,7 +26,7 @@ def send_authority_names(authority_address, private_key, process_instance_id, ha
     }
     message_bytes = hash_file.encode('ascii')
     base64_bytes = base64.b64encode(message_bytes)
-    message = contract.functions.setAuthoritiesNames(authority_address, int(process_instance_id), base64_bytes[:32],
+    message = contract.functions.setAuthoritiesNames(int(process_instance_id), base64_bytes[:32],
                                                      base64_bytes[32:]).buildTransaction(tx)
     signed_transaction = web3.eth.account.sign_transaction(message, private_key)
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
@@ -64,9 +62,8 @@ def sendHashedElements(authority_address, private_key, process_instance_id, elem
     }
     hashPart1 = elements[0].encode('utf-8')
     hashPart2 = elements[1].encode('utf-8')
-    message = contract.functions.setElementHashed(authority_address, process_instance_id,
-                                                  hashPart1[:32], hashPart1[32:],
-                                                  hashPart2[:32], hashPart2[32:]).buildTransaction(tx)
+    message = contract.functions.setElementHashed(process_instance_id, hashPart1[:32], hashPart1[32:], hashPart2[:32],
+                                                  hashPart2[32:]).buildTransaction(tx)
     signed_transaction = web3.eth.account.sign_transaction(message, private_key)
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
@@ -102,7 +99,7 @@ def sendElements(authority_address, private_key, process_instance_id, elements):
     hashPart1 = elements[0]
     hashPart2 = elements[1]
     # hashPart1 = hashPart1[64:] + b'000000'
-    message = contract.functions.setElement(authority_address, process_instance_id, hashPart1[:32], hashPart1[32:64],
+    message = contract.functions.setElement(process_instance_id, hashPart1[:32], hashPart1[32:64],
                                             hashPart1[64:] + b'000000', hashPart2[:32], hashPart2[32:64],
                                             hashPart2[64:] + b'000000').buildTransaction(tx)
     signed_transaction = web3.eth.account.sign_transaction(message, private_key)
@@ -141,7 +138,7 @@ def send_parameters_link(authority_address, private_key, process_instance_id, ha
     }
     message_bytes = hash_file.encode('ascii')
     base64_bytes = base64.b64encode(message_bytes)
-    message = contract.functions.setPublicParameters(authority_address, int(process_instance_id), base64_bytes[:32],
+    message = contract.functions.setPublicParameters(int(process_instance_id), base64_bytes[:32],
                                                      base64_bytes[32:]).buildTransaction(tx)
     signed_transaction = web3.eth.account.sign_transaction(message, private_key)
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
@@ -164,11 +161,11 @@ def retrieve_parameters_link(authority_address, process_instance_id):
 
 
 def send_publicKey_link(authority_address, private_key, process_instance_id, hash_file):
-    with open(compiled_contract_path1) as file:
+    with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
 
-    contract = web3.eth.contract(address=deployed_contract_address1, abi=contract_abi)
+    contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
 
     tx = {
         'nonce': get_nonce(authority_address),
@@ -177,7 +174,7 @@ def send_publicKey_link(authority_address, private_key, process_instance_id, has
     }
     message_bytes = hash_file.encode('ascii')
     base64_bytes = base64.b64encode(message_bytes)
-    message = contract.functions.setPublicKey(authority_address, int(process_instance_id), base64_bytes[:32],
+    message = contract.functions.setPublicKey(int(process_instance_id), base64_bytes[:32],
                                               base64_bytes[32:]).buildTransaction(tx)
     signed_transaction = web3.eth.account.sign_transaction(message, private_key)
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
@@ -187,11 +184,11 @@ def send_publicKey_link(authority_address, private_key, process_instance_id, has
 
 
 def retrieve_publicKey_link(eth_address, process_instance_id):
-    with open(compiled_contract_path1) as file:
+    with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
 
-    contract = web3.eth.contract(address=deployed_contract_address1, abi=contract_abi)
+    contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
 
     message = contract.functions.getPublicKey(eth_address, int(process_instance_id)).call()
     message_bytes = base64.b64decode(message)
@@ -200,11 +197,11 @@ def retrieve_publicKey_link(eth_address, process_instance_id):
 
 
 def send_MessageIPFSLink(dataOwner_address, private_key, message_id, hash_file):
-    with open(compiled_contract_path1) as file:
+    with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
 
-    contract = web3.eth.contract(address=deployed_contract_address1, abi=contract_abi)
+    contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
 
     tx = {
         'nonce': get_nonce(dataOwner_address),
@@ -222,24 +219,25 @@ def send_MessageIPFSLink(dataOwner_address, private_key, message_id, hash_file):
 
 
 def retrieve_MessageIPFSLink(message_id):
-    with open(compiled_contract_path1) as file:
+    with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
 
-    contract = web3.eth.contract(address=deployed_contract_address1, abi=contract_abi)
+    contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
 
     message = contract.functions.getIPFSLink(int(message_id)).call()
-    message_bytes = base64.b64decode(message)
-    message = message_bytes.decode('ascii')
-    return message
+    sender = message[0]
+    message_bytes = base64.b64decode(message[1])
+    ipfs_link = message_bytes.decode('ascii')
+    return ipfs_link, sender
 
 
 def send_users_attributes(attribute_certifier_address, private_key, process_instance_id, hash_file):
-    with open(compiled_contract_path1) as file:
+    with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
 
-    contract = web3.eth.contract(address=deployed_contract_address1, abi=contract_abi)
+    contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
 
     tx = {
         'nonce': get_nonce(attribute_certifier_address),
@@ -248,8 +246,9 @@ def send_users_attributes(attribute_certifier_address, private_key, process_inst
     }
     message_bytes = hash_file.encode('ascii')
     base64_bytes = base64.b64encode(message_bytes)
-    message = contract.functions.setUserAttributes(int(process_instance_id), base64_bytes[:32], base64_bytes[32:])\
-        .buildTransaction(tx)
+    # in caso aggiungere il sender con msg.sender in Solidity anche qui. Da valutare
+    message = contract.functions.setUserAttributes(int(process_instance_id), base64_bytes[:32],
+                                                   base64_bytes[32:]).buildTransaction(tx)
     signed_transaction = web3.eth.account.sign_transaction(message, private_key)
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
@@ -258,11 +257,11 @@ def send_users_attributes(attribute_certifier_address, private_key, process_inst
 
 
 def retrieve_users_attributes(process_instance_id):
-    with open(compiled_contract_path1) as file:
+    with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
 
-    contract = web3.eth.contract(address=deployed_contract_address1, abi=contract_abi)
+    contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
 
     message = contract.functions.getUserAttributes(int(process_instance_id)).call()
     message_bytes = base64.b64decode(message)
@@ -270,12 +269,12 @@ def retrieve_users_attributes(process_instance_id):
     return message
 
 
-def send_reader_public_key(reader_address, private_key, hash_file):
-    with open(compiled_contract_path1) as file:
+def send_publicKey_readers(reader_address, private_key, hash_file):
+    with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
 
-    contract = web3.eth.contract(address=deployed_contract_address1, abi=contract_abi)
+    contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
 
     tx = {
         'nonce': get_nonce(reader_address),
@@ -284,8 +283,7 @@ def send_reader_public_key(reader_address, private_key, hash_file):
     }
     message_bytes = hash_file.encode('ascii')
     base64_bytes = base64.b64encode(message_bytes)
-    message = contract.functions.setPublicKeyReaders(reader_address, base64_bytes[:32], base64_bytes[32:])\
-        .buildTransaction(tx)
+    message = contract.functions.setPublicKeyReaders(base64_bytes[:32], base64_bytes[32:]).buildTransaction(tx)
     signed_transaction = web3.eth.account.sign_transaction(message, private_key)
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
@@ -293,14 +291,14 @@ def send_reader_public_key(reader_address, private_key, hash_file):
     # print(tx_receipt)
 
 
-def retrieve_reader_public_key(reader_address):
-    with open(compiled_contract_path1) as file:
+def retrieve_publicKey_readers(reader_address):
+    with open(compiled_contract_path) as file:
         contract_json = json.load(file)
         contract_abi = contract_json['abi']
 
-    contract = web3.eth.contract(address=deployed_contract_address1, abi=contract_abi)
+    contract = web3.eth.contract(address=deployed_contract_address, abi=contract_abi)
 
     message = contract.functions.getPublicKeyReaders(reader_address).call()
     message_bytes = base64.b64decode(message)
-    message = message_bytes.decode('ascii')
-    return message
+    message1 = message_bytes.decode('ascii')
+    return message1
