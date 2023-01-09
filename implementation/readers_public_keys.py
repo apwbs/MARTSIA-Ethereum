@@ -36,10 +36,10 @@ def generate_keys():
 
     # reader address not necessary because each user has one key. Since we use only one 'reader/client' for all the
     # readers, we need a distinction.
-    x.execute("INSERT OR IGNORE INTO rsa_private_key VALUES (?,?,?)", (reader_address, privateKey_store))
+    x.execute("INSERT OR IGNORE INTO rsa_private_key VALUES (?,?)", (reader_address, privateKey_store))
     conn.commit()
 
-    x.execute("INSERT OR IGNORE INTO rsa_public_key VALUES (?,?,?,?)", (reader_address, hash_file, publicKey_store))
+    x.execute("INSERT OR IGNORE INTO rsa_public_key VALUES (?,?,?)", (reader_address, hash_file, publicKey_store))
     conn.commit()
 
     block_int.send_publicKey_readers(reader_address, private_key, hash_file)
