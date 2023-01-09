@@ -1,7 +1,7 @@
 from decouple import config
 from web3 import Web3
 
-web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/55aa0d95a9be4261b3c676315d6abc7e"))
+web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
 
 process_instance_id = config('PROCESS_INSTANCE_ID')
 
@@ -19,6 +19,7 @@ mechanics_private_key = config('READER_PRIVATEKEY_SUPPLIER2')
 
 address_requesting = electronics_address
 private_key_requesting = electronics_private_key
+authority_address = authority2_address
 
 
 def send_key_request():
@@ -26,7 +27,7 @@ def send_key_request():
 
     tx = {
         'nonce': nonce,
-        'to': authority4_address,
+        'to': authority_address,
         'value': 0,
         'gas': 2000000,
         'gasPrice': web3.toWei('50', 'gwei'),

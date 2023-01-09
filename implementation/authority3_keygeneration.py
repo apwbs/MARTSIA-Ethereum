@@ -13,7 +13,7 @@ def retrieve_public_parameters(process_instance_id):
     conn = sqlite3.connect('files/authority3/authority3.db')
     x = conn.cursor()
 
-    x.execute("SELECT * FROM public_parameters WHERE process_instance=?", (process_instance_id,))
+    x.execute("SELECT * FROM public_parameters WHERE process_instance=?", (str(process_instance_id),))
     result = x.fetchall()
     public_parameters = result[0][2].encode()
     return public_parameters
@@ -35,7 +35,7 @@ def generate_user_key(gid, process_instance_id, reader_address):
     public_parameters["H"] = H
     public_parameters["F"] = F
 
-    x.execute("SELECT * FROM private_keys WHERE process_instance=?", (process_instance_id,))
+    x.execute("SELECT * FROM private_keys WHERE process_instance=?", (str(process_instance_id),))
     result = x.fetchall()
     sk3 = result[0][1]
     sk3 = bytesToObject(sk3, groupObj)

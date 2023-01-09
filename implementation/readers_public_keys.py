@@ -34,6 +34,8 @@ def generate_keys():
     hash_file = api.add_json(f.read())
     print(f'ipfs hash: {hash_file}')
 
+    block_int.send_publicKey_readers(reader_address, private_key, hash_file)
+
     # reader address not necessary because each user has one key. Since we use only one 'reader/client' for all the
     # readers, we need a distinction.
     x.execute("INSERT OR IGNORE INTO rsa_private_key VALUES (?,?)", (reader_address, privateKey_store))
@@ -41,8 +43,6 @@ def generate_keys():
 
     x.execute("INSERT OR IGNORE INTO rsa_public_key VALUES (?,?,?)", (reader_address, hash_file, publicKey_store))
     conn.commit()
-
-    block_int.send_publicKey_readers(reader_address, private_key, hash_file)
 
 
 if __name__ == "__main__":

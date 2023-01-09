@@ -35,7 +35,8 @@ CREATE TABLE handshake_number (
 
 CREATE TABLE authorities_generated_decription_keys ( 
     process_instance TEXT,
-    authority_name TEXT,
+    authority_address TEXT,
+    ipfs_file_link_hash TEXT,
     decription_key TEXT,
-    primary key (process_instance, authority_name)
+    primary key (process_instance, authority_address)
 );

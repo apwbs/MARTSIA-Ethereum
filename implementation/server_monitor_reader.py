@@ -25,12 +25,12 @@ conn = sqlite3.connect('files/reader/reader.db')
 x = conn.cursor()
 
 reader_address = electronics_address
-authority_address = authority4_address
+authority_address = authority2_address
 
 
 def retrieve_key(transaction):
-    if transaction['sender'] == authority_address:
-        partial = base64.b64decode(transaction['note']).decode('utf-8').split(',')
+    if transaction['from'] == authority_address:
+        partial = bytes.fromhex(transaction['input'][2:]).decode('utf-8').split(',')
         process_instance_id = partial[1]
         ipfs_link = partial[0]
         getfile = api.cat(ipfs_link)
@@ -51,20 +51,20 @@ def retrieve_key(transaction):
             final_bytes = final_bytes + message
 
         x.execute("INSERT OR IGNORE INTO authorities_generated_decription_keys VALUES (?,?,?,?)",
-                  (process_instance_id, authority_address, ipfs_link, final_bytes))
+                  (str(process_instance_id), authority_address, ipfs_link, final_bytes))
         conn.commit()
 
         print('key retrieved')
 
 
 def transactions_monitoring():
-    min_round = 8187469
+    min_round = 8283532
     transactions = []
     while True:
         block = web3.eth.getBlock(min_round, True)
         print(block.number)
         for transaction in block.transactions:
-            if transaction['hash'] not in transactions and 'input' in transaction:
+            if transaction['to'] == reader_address and transaction['hash'] not in transactions and 'input' in transaction:
                 transactions.append(transaction)
         min_round = min_round + 1
         for x in transactions:

@@ -14,7 +14,7 @@ api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 authority1_address = config('AUTHORITY1_ADDRESS')
 authority1_private_key = config('AUTHORITY1_PRIVATEKEY')
 
-web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/55aa0d95a9be4261b3c676315d6abc7e"))
+web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
 
 
 def send_ipfs_link(reader_address, process_instance_id, hash_file):
@@ -50,7 +50,7 @@ def cipher_generated_key(reader_address, process_instance_id, generated_ma_key):
     getfile = api.cat(public_key_ipfs_link)
     getfile = getfile.split(b'###')
     if getfile[0].split(b': ')[1].decode('utf-8') == reader_address:
-        publicKey_usable = rsa.PublicKey.load_pkcs1(getfile[1])
+        publicKey_usable = rsa.PublicKey.load_pkcs1(getfile[1].rstrip(b'"').replace(b'\\n', b'\n'))
 
         info = [generated_ma_key[i:i + 117] for i in range(0, len(generated_ma_key), 117)]
 
@@ -70,7 +70,7 @@ def cipher_generated_key(reader_address, process_instance_id, generated_ma_key):
 
 
 def transactions_monitoring():
-    min_round = 8187427
+    min_round = 8283480
     transactions = []
     note = 'generate your part of my key'
     while True:
