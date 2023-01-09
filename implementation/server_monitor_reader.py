@@ -3,6 +3,9 @@ from decouple import config
 import rsa
 from web3 import Web3
 import ipfshttpclient
+import sqlite3
+import base64
+import json
 
 api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
@@ -17,28 +20,39 @@ manufacturer_address = config('DATAOWNER_MANUFACTURER_ADDRESS')
 electronics_address = config('READER_ADDRESS_SUPPLIER1')
 mechanics_address = config('READER_ADDRESS_SUPPLIER2')
 
+# Connection to SQLite3 data_owner database
+conn = sqlite3.connect('files/reader/reader.db')
+x = conn.cursor()
+
+reader_address = electronics_address
+authority_address = authority4_address
+
 
 def retrieve_key(transaction):
-    if transaction['from'] == authority4_address:
-        partial = bytes.fromhex(transaction['input'][2:]).decode('utf-8').split(',')
+    if transaction['sender'] == authority_address:
+        partial = base64.b64decode(transaction['note']).decode('utf-8').split(',')
         process_instance_id = partial[1]
         ipfs_link = partial[0]
         getfile = api.cat(ipfs_link)
+        getfile = getfile.decode('utf-8').replace(r'\"', r'')
+        j2 = json.loads(getfile)
+        data2 = base64.b64decode(j2)
 
-        info2 = [getfile[i:i + 128] for i in range(0, len(getfile), 128)]
+        x.execute("SELECT * FROM rsa_private_key WHERE reader_address=?", (reader_address,))
+        result = x.fetchall()
+        pk = result[0][1]
+        privateKey_usable = rsa.PrivateKey.load_pkcs1(pk)
+
+        info2 = [data2[i:i + 128] for i in range(0, len(data2), 128)]
         final_bytes = b''
-
-        with open('files/keys_readers/private_key_' + str(electronics_address) + '.txt', 'rb') as sk1r:
-            sk1 = sk1r.read()
-        sk1 = sk1.split(b'###')[1]
-        privateKey_usable = rsa.PrivateKey.load_pkcs1(sk1)
 
         for j in info2:
             message = rsa.decrypt(j, privateKey_usable)
             final_bytes = final_bytes + message
 
-        with open('files/reader/user_sk4_' + str(process_instance_id) + '.txt', "wb") as text_file:
-            text_file.write(final_bytes)
+        x.execute("INSERT OR IGNORE INTO authorities_generated_decription_keys VALUES (?,?,?,?)",
+                  (process_instance_id, authority_address, ipfs_link, final_bytes))
+        conn.commit()
 
         print('key retrieved')
 

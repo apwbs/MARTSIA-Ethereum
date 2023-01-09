@@ -4,6 +4,9 @@ import authority2_keygeneration
 import rsa
 import block_int
 from web3 import Web3
+import io
+import json
+import base64
 import ipfshttpclient
 
 api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
@@ -43,7 +46,7 @@ def generate_key(x):
 
 
 def cipher_generated_key(reader_address, process_instance_id, generated_ma_key):
-    public_key_ipfs_link = block_int.retrieve_reader_public_key(reader_address)
+    public_key_ipfs_link = block_int.retrieve_publicKey_readers(reader_address)
     getfile = api.cat(public_key_ipfs_link)
     getfile = getfile.split(b'###')
     if getfile[0].split(b': ')[1].decode('utf-8') == reader_address:
@@ -51,18 +54,16 @@ def cipher_generated_key(reader_address, process_instance_id, generated_ma_key):
 
         info = [generated_ma_key[i:i + 117] for i in range(0, len(generated_ma_key), 117)]
 
-        name_file = 'files/authority2/generated_key_ciphered_' + str(reader_address) + '_' \
-                    + str(process_instance_id) + '.txt'
-
-        text_in_file = b''
+        f = io.BytesIO()
         for part in info:
             crypto = rsa.encrypt(part, publicKey_usable)
-            text_in_file = text_in_file + crypto
-        with open(name_file, 'wb') as ipfs:
-            ipfs.write(text_in_file)
+            f.write(crypto)
+        f.seek(0)
 
-        new_file = api.add(name_file)
-        hash_file = new_file['Hash']
+        file_to_str = f.read()
+        j = base64.b64encode(file_to_str).decode('ascii')
+        s = json.dumps(j)
+        hash_file = api.add_json(s)
         print(f'ipfs hash: {hash_file}')
 
         send_ipfs_link(reader_address, process_instance_id, hash_file)
