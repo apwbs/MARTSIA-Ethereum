@@ -6,7 +6,7 @@ import ipfshttpclient
 
 api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
-web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/55aa0d95a9be4261b3c676315d6abc7e"))
+web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
 
 authority1_address = config('AUTHORITY1_ADDRESS')
 authority2_address = config('AUTHORITY2_ADDRESS')

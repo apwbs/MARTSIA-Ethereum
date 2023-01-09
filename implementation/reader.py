@@ -6,11 +6,18 @@ import ipfshttpclient
 import json
 from maabe_class import *
 from decouple import config
+import sqlite3
 
 authority1_address = config('AUTHORITY1_ADDRESS')
 authority2_address = config('AUTHORITY2_ADDRESS')
 authority3_address = config('AUTHORITY3_ADDRESS')
 authority4_address = config('AUTHORITY4_ADDRESS')
+
+process_instance_id_env = config('PROCESS_INSTANCE_ID')
+
+# Connection to SQLite3 data_owner database
+conn = sqlite3.connect('files/reader/reader.db')
+x = conn.cursor()
 
 
 def merge_dicts(*dict_args):
@@ -52,13 +59,15 @@ def generate_public_parameters(process_instance_id):
 
     if len(set(check_authorities)) == 1 and len(set(check_parameters)) == 1:
         getfile = api.cat(check_parameters[0])
-        with open('files/reader/public_parameters_reader_' + str(process_instance_id) + '.txt', 'wb') as ppw:
-            ppw.write(getfile)
+        x.execute("INSERT OR IGNORE INTO public_parameters VALUES (?,?,?)",
+                  (process_instance_id, check_parameters[0], getfile))
+        conn.commit()
 
 
 def retrieve_public_parameters(process_instance_id):
-    with open('files/reader/public_parameters_reader_' + str(process_instance_id) + '.txt', 'rb') as ppr:
-        public_parameters = ppr.read()
+    x.execute("SELECT * FROM public_parameters WHERE process_instance=?", (process_instance_id,))
+    result = x.fetchall()
+    public_parameters = result[0][2]
     return public_parameters
 
 
@@ -76,7 +85,7 @@ def actual_decryption(remaining, public_parameters, user_sk, ciphertext_dict):
     print(dict(decoded_final))
 
 
-def main(groupObj, maabe, process_instance_id, message_id, slice_id):
+def main(process_instance_id, message_id, slice_id):
     response = retrieve_public_parameters(process_instance_id)
     public_parameters = bytesToObject(response, groupObj)
     H = lambda x: self.group.hash(x, G2)
@@ -85,30 +94,46 @@ def main(groupObj, maabe, process_instance_id, message_id, slice_id):
     public_parameters["F"] = F
 
     # keygen Bob
-    with open('files/reader/user_sk1_' + str(process_instance_id) + '.txt', 'r') as us1:
-        user_sk1 = us1.read()
+    # we can do this with a for loop
+    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=?",
+              (str(process_instance_id), 'Auth-1'))
+    result = x.fetchall()
+    user_sk1 = result[0][2]
+    user_sk1 = user_sk1.encode()
     user_sk1 = bytesToObject(user_sk1, groupObj)
 
-    with open('files/reader/user_sk2_' + str(process_instance_id) + '.txt', 'r') as us2:
-        user_sk2 = us2.read()
+    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=?",
+              (str(process_instance_id), 'Auth-2'))
+    result = x.fetchall()
+    user_sk2 = result[0][2]
+    user_sk2 = user_sk2.encode()
     user_sk2 = bytesToObject(user_sk2, groupObj)
 
-    with open('files/reader/user_sk3_' + str(process_instance_id) + '.txt', 'r') as us3:
-        user_sk3 = us3.read()
+    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=?",
+              (str(process_instance_id), 'Auth-3'))
+    result = x.fetchall()
+    user_sk3 = result[0][2]
+    user_sk3 = user_sk3.encode()
     user_sk3 = bytesToObject(user_sk3, groupObj)
 
-    with open('files/reader/user_sk4_' + str(process_instance_id) + '.txt', 'r') as us4:
-        user_sk4 = us4.read()
+    x.execute("SELECT * FROM authorities_generated_decription_keys WHERE process_instance=? AND authority_name=?",
+              (str(process_instance_id), 'Auth-4'))
+    result = x.fetchall()
+    user_sk4 = result[0][2]
+    user_sk4 = user_sk4.encode()
     user_sk4 = bytesToObject(user_sk4, groupObj)
 
     user_sk = {'GID': 'bob', 'keys': merge_dicts(user_sk1, user_sk2, user_sk3, user_sk4)}
 
     # decrypt
-    ciphertext_link = block_int.retrieve_MessageIPFSLink(message_id)
+    response = block_int.retrieve_MessageIPFSLink(message_id)
+    ciphertext_link = response[0]
     getfile = api.cat(ciphertext_link)
     ciphertext_dict = json.loads(getfile)
+    sender = response[1]
     if ciphertext_dict['metadata']['process_instance_id'] == int(process_instance_id) \
-            and ciphertext_dict['metadata']['message_id'] == message_id:
+            and ciphertext_dict['metadata']['message_id'] == message_id \
+            and ciphertext_dict['metadata']['sender'] == sender:
         slice_check = ciphertext_dict['header']
         if len(slice_check) == 1:
             actual_decryption(ciphertext_dict['header'][0], public_parameters, user_sk, ciphertext_dict)
@@ -123,9 +148,9 @@ if __name__ == '__main__':
     maabe = MaabeRW15(groupObj)
     api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
-    process_instance_id = 9325236771567211612
+    process_instance_id = int(process_instance_id_env)
 
     # generate_public_parameters(process_instance_id)
-    message_id = 12990717557941230051
-    slice_id = 9522254365290608874
+    message_id = 15090073102090092669
+    slice_id = 3379834032212897134
     main(process_instance_id, message_id, slice_id)
