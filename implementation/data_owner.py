@@ -129,12 +129,12 @@ def main(groupObj, maabe, api, process_instance_id):
 
     f = open('files/data.json')
     data = json.load(f)
-    access_policy = ['(12771601691441456567@UT and 12771601691441456567@OU and 12771601691441456567@OT and '
-                     '12771601691441456567@TU) and (MANUFACTURER@UT or SUPPLIER@OU)',
-                     '(12771601691441456567@UT and 12771601691441456567@OU and 12771601691441456567@OT and '
-                     '12771601691441456567@TU) and (MANUFACTURER@UT or (SUPPLIER@OU and ELECTRONICS@OT)',
-                     '(12771601691441456567@UT and 12771601691441456567@OU and 12771601691441456567@OT and '
-                     '12771601691441456567@TU) and (MANUFACTURER@UT or (SUPPLIER@OU and MECHANICS@TU)']
+    access_policy = ['(9714620598793047060@UT and 9714620598793047060@OU and 9714620598793047060@OT and '
+                     '9714620598793047060@TU) and (MANUFACTURER@UT or SUPPLIER@OU)',
+                     '(9714620598793047060@UT and 9714620598793047060@OU and 9714620598793047060@OT and '
+                     '9714620598793047060@TU) and (MANUFACTURER@UT or (SUPPLIER@OU and ELECTRONICS@OT)',
+                     '(9714620598793047060@UT and 9714620598793047060@OU and 9714620598793047060@OT and '
+                     '9714620598793047060@TU) and (MANUFACTURER@UT or (SUPPLIER@OU and MECHANICS@TU)']
 
     entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
 
@@ -198,11 +198,11 @@ def main(groupObj, maabe, api, process_instance_id):
     hash_file = api.add_json(json_total)
     print(f'ipfs hash: {hash_file}')
 
+    block_int.send_MessageIPFSLink(dataOwner_address, dataOwner_private_key, message_id, hash_file)
+
     x.execute("INSERT OR IGNORE INTO messages VALUES (?,?,?,?)",
               (str(process_instance_id), str(message_id), hash_file, str(json_total)))
     conn.commit()
-
-    block_int.send_MessageIPFSLink(dataOwner_address, dataOwner_private_key, message_id, hash_file)
 
 
 if __name__ == '__main__':

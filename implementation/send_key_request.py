@@ -19,7 +19,7 @@ mechanics_private_key = config('READER_PRIVATEKEY_SUPPLIER2')
 
 address_requesting = electronics_address
 private_key_requesting = electronics_private_key
-authority_address = authority2_address
+authority_address = authority4_address
 
 
 def send_key_request():
@@ -30,7 +30,7 @@ def send_key_request():
         'to': authority_address,
         'value': 0,
         'gas': 2000000,
-        'gasPrice': web3.toWei('50', 'gwei'),
+        'gasPrice': web3.toWei('100', 'gwei'),
         'data': web3.toHex(b'generate your part of my key,bob,' + process_instance_id.encode())
     }
 

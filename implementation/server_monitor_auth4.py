@@ -25,7 +25,7 @@ def send_ipfs_link(reader_address, process_instance_id, hash_file):
         'to': reader_address,
         'value': 0,
         'gas': 2000000,
-        'gasPrice': web3.toWei('50', 'gwei'),
+        'gasPrice': web3.toWei('100', 'gwei'),
         'data': web3.toHex(hash_file.encode() + b',' + str(process_instance_id).encode())
     }
 
@@ -70,7 +70,7 @@ def cipher_generated_key(reader_address, process_instance_id, generated_ma_key):
 
 
 def transactions_monitoring():
-    min_round = 8283509
+    min_round = 8288168
     transactions = []
     note = 'generate your part of my key'
     while True:
