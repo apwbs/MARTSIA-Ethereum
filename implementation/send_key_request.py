@@ -24,13 +24,12 @@ authority_address = authority4_address
 
 def send_key_request():
     nonce = web3.eth.getTransactionCount(address_requesting)
-
     tx = {
         'nonce': nonce,
         'to': authority_address,
         'value': 0,
-        'gas': 2000000,
-        'gasPrice': web3.toWei('100', 'gwei'),
+        'gas': 40000,
+        'gasPrice': web3.toWei(web3.eth.gasPrice, 'wei'),
         'data': web3.toHex(b'generate your part of my key,bob,' + process_instance_id.encode())
     }
 
