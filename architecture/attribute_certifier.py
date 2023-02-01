@@ -16,20 +16,17 @@ manufacturer_address = config('DATAOWNER_MANUFACTURER_ADDRESS')
 supplier1_address = config('READER_ADDRESS_SUPPLIER1')
 supplier2_address = config('READER_ADDRESS_SUPPLIER2')
 
-
 # Connection to SQLite3 attribute_certifier database
 conn = sqlite3.connect('files/attribute_certifier/attribute_certifier.db')
 x = conn.cursor()
 
 
 def generate_attributes():
-    # now = datetime.now()
-    # now = int(now.strftime("%Y%m%d%H%M%S%f"))
-    # random.seed(now)
-    # process_instance_id = random.randint(1, 2 ** 64)
-    # print(f'process instance id: {process_instance_id}')
-
-    process_instance_id = 8785437525079851029
+    now = datetime.now()
+    now = int(now.strftime("%Y%m%d%H%M%S%f"))
+    random.seed(now)
+    process_instance_id = random.randint(1, 2 ** 64)
+    print(f'process instance id: {process_instance_id}')
 
     dict_users = {
         manufacturer_address: [str(process_instance_id) + '@UT', str(process_instance_id) + '@OU',
@@ -54,9 +51,9 @@ def generate_attributes():
 
     hash_file = api.add_json(file_to_str)
     print(f'ipfs hash: {hash_file}')
-    # QmYQ6keiivpFrVbnDRPp5hLJGMAe3JhyqwV5gaUxzuNnMj
 
-    x.execute("INSERT OR IGNORE INTO user_attributes VALUES (?,?,?)", (process_instance_id, hash_file, file_to_str))
+    x.execute("INSERT OR IGNORE INTO user_attributes VALUES (?,?,?)",
+              (str(process_instance_id), hash_file, file_to_str))
     conn.commit()
 
     block_int.send_users_attributes(attribute_certifier_address, private_key, process_instance_id, hash_file)
@@ -64,4 +61,3 @@ def generate_attributes():
 
 if __name__ == "__main__":
     generate_attributes()
-
