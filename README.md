@@ -4,7 +4,7 @@
 
 ### Guide
 
-In order to run the system, the following libraries must be installed: python3.6, charm https://github.com/JHUISI/charm, rsa, web3 (python-version), python-decouple, truffle, sqlite3.
+In order to run the system, the following libraries must be installed: python3.6, charm https://github.com/JHUISI/charm, rsa, web3 (python-version), python-decouple, truffle, sqlite3, ipfs.
 
 The first thing to do is to deploy the smart contract on the blockchain. 
 To do that, create a Metamask wallet and fund an account with some Eth in the Goerli testnet with a Goerli faucet. 
@@ -43,4 +43,12 @@ procedure, the authorities are instantiated via multi-party computation, and the
 To cipher a message and store it on the blockchain, open the 'data_owner.py' file. Firstly, run 'generate_pp_pk()' to 
 instantiate the data owner, then modify the file 'data.json' with the data you want to cipher. Then, run the main() function, but
 remember to modify the access policy and the entries that you need to cipher with a particular policy: lines 132-139.
+
+To obtain a key from the authorities there are two ways. The first one is to send a request using an SLL client-server connection,
+the second option is to send a key request on chain and get an IPFS link on chain to open. To send a request via SSL, open
+the 'client.py' file, specify the constants like 'reader_address' and gid etc. and then run 'python 3 server_authority*.py'. Then, run
+python3 client.py to firstly start the handshake function and then to ask for a key. Send these two messages in different
+moments just commenting the action that you do not want to perform. Once you have obtained a part of a key from all the authorities,
+open the 'reader.py' file and run the generate_public_parameters() function. Then put the right values in the message_id and
+slice_id constants and run the main() function to read the message.
 
