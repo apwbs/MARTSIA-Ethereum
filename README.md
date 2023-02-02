@@ -6,6 +6,29 @@
 
 In order to run the system, the following libraries must be installed: python3.6, charm https://github.com/JHUISI/charm, rsa, web3 (python-version), python-decouple, truffle, sqlite3, ipfs.
 
+If the installation of 'charm' fails, try run these commands: 
+1. sudo apt-get install libgmp3-dev libssl-dev
+2. wget https://crypto.stanford.edu/pbc/files/pbc-0.5.14.tar.gz
+3. tar xvf pbc-0.5.14.tar.gz
+4. cd pbc-0.5.14
+5. ("sudo apt-get install flex bison" may be necessary, depending on what you already have on your system)
+6. ./configure
+7. make
+8. sudo make install
+9. pip install sovrin
+
+If the installation fails, try these commands too:
+
+1. sudo apt-get git
+2. sudo apt-get install m4
+3. git clone https://github.com/JHUISI/charm.git
+4. cd charm
+5. sudo ./configure.sh
+6. sudo make
+7. sudo make install
+8. sudo ldconfig
+9. sudo -H pip install sovrin
+
 The first thing to do is to deploy the smart contract on the blockchain. 
 To do that, create a Metamask wallet and fund an account with some Eth in the Goerli testnet with a Goerli faucet. 
 Then create an account on Infura and obtain a key for the Goerli testnet.
