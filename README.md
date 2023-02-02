@@ -32,3 +32,15 @@ you intend to give a pair of keys to.
 Next, open the attribute certifier file and write down the attributes that you intend to give to the actors of the system.
 Then run 'python3 attribute_certifier.py' to store those values both in the certifier db and on chain. Copy the resulting
 process_instance_id number in the .env file.
+
+In order to instantiate the four authorities with multi-party computation open the four scripts, namely authority1.py, authority2.py
+authority3.py and authority4.py. Consider the lines 185-189 of the first file and lines 182-186 of the remaining three.
+Run the function 'save_authorities_names()' for all the authorities. Then, after all the authorities have completed this step,
+run 'initial_parameters_hashed()' for all the authorities. Then run the other three functions, but keeping the same procedure, namely
+run the third function for all the authorities, then the fourth function of all the authorities and so on. At the end of this 
+procedure, the authorities are instantiated via multi-party computation, and they are ready to generate keys for the users.
+
+To cipher a message and store it on the blockchain, open the 'data_owner.py' file. Firstly, run 'generate_pp_pk()' to 
+instantiate the data owner, then modify the file 'data.json' with the data you want to cipher. Then, run the main() function, but
+remember to modify the access policy and the entries that you need to cipher with a particular policy: lines 132-139.
+
