@@ -5,6 +5,8 @@
 ### Guide
 
 In order to run the system, the following libraries must be installed: python3.6, charm https://github.com/JHUISI/charm, rsa, web3 (python-version), python-decouple, truffle, sqlite3, ipfs.
+It is recommended to install Docker and create a new image running Ubuntu 18.04 and then start one
+or more containers from that image.
 
 If the installation of 'charm' fails, try run these commands: 
 1. sudo apt-get install libgmp3-dev libssl-dev
@@ -75,3 +77,9 @@ moments just commenting the action that you do not want to perform. Once you hav
 open the 'reader.py' file and run the generate_public_parameters() function. Then put the right values in the message_id and
 slice_id constants and run the main() function to read the message.
 
+To use the second way to ask for a key, you need to run the 'send_key_request()'
+function specifying the authority_address you want to invoke. Then, run the server_monitor_auth*.py script to let the 
+authorities monitor the blockchain and react to a key request. The authority is going to read the key request, generate a key
+and store it on chain. The user, in order to get the key, has to run the 'server_monitor_reader.py' script specifying the 
+authority address invoked. The script is going to retrieve the key and store it in a private database. After having obtained 
+all the key parts, just run the 'reader.py' script as described above.
