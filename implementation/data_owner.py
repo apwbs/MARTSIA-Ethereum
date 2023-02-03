@@ -129,12 +129,12 @@ def main(groupObj, maabe, api, process_instance_id):
 
     f = open('files/data.json')
     data = json.load(f)
-    access_policy = ['(2390770761426150583@UT and 2390770761426150583@OU and 2390770761426150583@OT and '
-                     '2390770761426150583@TU) and (MANUFACTURER@UT or SUPPLIER@OU)',
-                     '(2390770761426150583@UT and 2390770761426150583@OU and 2390770761426150583@OT and '
-                     '2390770761426150583@TU) and (MANUFACTURER@UT or (SUPPLIER@OU and ELECTRONICS@OT)',
-                     '(2390770761426150583@UT and 2390770761426150583@OU and 2390770761426150583@OT and '
-                     '2390770761426150583@TU) and (MANUFACTURER@UT or (SUPPLIER@OU and MECHANICS@TU)']
+    access_policy = ['(12121344617542189845@UT and 12121344617542189845@OU and 12121344617542189845@OT and '
+                     '12121344617542189845@TU) and (MANUFACTURER@UT or SUPPLIER@OU)',
+                     '(12121344617542189845@UT and 12121344617542189845@OU and 12121344617542189845@OT and '
+                     '12121344617542189845@TU) and (MANUFACTURER@UT or (SUPPLIER@OU and ELECTRONICS@OT)',
+                     '(12121344617542189845@UT and 12121344617542189845@OU and 12121344617542189845@OT and '
+                     '12121344617542189845@TU) and (MANUFACTURER@UT or (SUPPLIER@OU and MECHANICS@TU)']
 
     entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
 
