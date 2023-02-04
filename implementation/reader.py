@@ -147,6 +147,6 @@ if __name__ == '__main__':
     process_instance_id = int(process_instance_id_env)
 
     # generate_public_parameters(process_instance_id)
-    message_id = 407748204482389136
-    slice_id = 3122334318890680687
+    message_id = 13328233931282411721
+    slice_id = 15789856889915695939
     main(process_instance_id, message_id, slice_id)

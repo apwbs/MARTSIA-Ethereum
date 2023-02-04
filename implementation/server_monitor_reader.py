@@ -25,7 +25,7 @@ conn = sqlite3.connect('files/reader/reader.db')
 x = conn.cursor()
 
 reader_address = electronics_address
-authority_address = authority1_address
+authority_address = authority4_address
 
 
 def retrieve_key(transaction):
@@ -58,7 +58,7 @@ def retrieve_key(transaction):
 
 
 def transactions_monitoring():
-    min_round = 8416886
+    min_round = 8433628
     transactions = []
     while True:
         block = web3.eth.getBlock(min_round, True)
