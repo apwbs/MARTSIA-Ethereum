@@ -2,11 +2,30 @@
 
 #### This repository contains the Ethereum-based version of the MARTSIA approach. 
 
-### Guide
+## Guide
 
-In order to run the system, the following libraries must be installed: python3.6, [charm](https://github.com/JHUISI/charm), rsa, web3 (python-version), python-decouple, truffle, sqlite3, ipfs.
-It is recommended to install Docker and create a new image running Ubuntu 18.04 and then start one
-or more containers from that image.
+### Requirements
+
+In order to run the system, it is (strongly) recommended to install Docker and create a new image running Ubuntu 18.04 and then start one
+or more containers from that image. To do this, firstly use the DockerFile running `docker build -t image_name PATH_TO_THE_DOCKERFILE/DockerFiles/`
+to create a docker image. Then run `docker run -it -v PATH_TO_MARTSIA-EthereumFOLDER/MARTSIA-Ethereum/:/MARTSIA-Ethereum image_name`
+to create a container starting from the image created in the previous step. To run the first instance of a container run
+`docker start container_name`, then run `docker attach container_name`. To run other independent instances of the same container run
+`docker exec -it container_name bin/bash`. (Running other instances (from the second on) of the same container with 
+`docker start` and `docker attach`) will not make them independent. Every command in one instance will be applied also in the
+other instances. Using `docker exec` you can open as many independent containers as you like.
+
+The following libraries must be installed inside the container: python3.6, [charm](https://github.com/JHUISI/charm), 
+[rsa](https://pypi.org/project/rsa/), [web3](https://web3py.readthedocs.io/en/stable/quickstart.html) (python-version), 
+[python-decouple](https://pypi.org/project/python-decouple/), sqlite3 (python3 -m pip install sqlite3), 
+ipfs (for local node) run:
+1. python3.6 -m pip install ipfshttpclient
+2. wget https://dist.ipfs.io/go-ipfs/v0.7.0/go-ipfs_v0.7.0_linux-amd64.tar.gz
+3. tar -xvzf go-ipfs_v0.7.0_linux-amd64.tar.gz
+4. cd go-ipfs
+5. sudo bash install.sh
+6. ipfs init
+7. ipfs daemon (in another terminal window).
 
 If the installation of 'charm' fails, try running these commands: 
 1. sudo apt-get install libgmp3-dev libssl-dev
@@ -19,7 +38,7 @@ If the installation of 'charm' fails, try running these commands:
 8. sudo make install
 9. pip install sovrin
 
-If the installation fails, try these commands too:
+If the installation fails again, try these commands too:
 1. sudo apt-get git
 2. sudo apt-get install m4
 3. git clone https://github.com/JHUISI/charm.git
@@ -29,6 +48,11 @@ If the installation fails, try these commands too:
 7. sudo make install
 8. sudo ldconfig
 9. sudo -H pip install sovrin
+
+In order to check if 'charm' is successfully installed, try run `python3` (inside the container) and then `import charm`. 
+If there are no errors displayed, the package is correctly installed.
+
+### Contracts deployment
 
 The first thing to do is to deploy the smart contract on the blockchain. 
 To do that, create a Metamask wallet and fund an account with some Eth in the Goerli testnet with a Goerli faucet. 
