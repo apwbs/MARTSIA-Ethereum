@@ -17,8 +17,8 @@ other instances. Using `docker exec` you can open as many independent containers
 
 The following libraries must be installed inside the container: python3.6, [charm](https://github.com/JHUISI/charm), 
 [rsa](https://pypi.org/project/rsa/), [web3](https://web3py.readthedocs.io/en/stable/quickstart.html) (python-version), 
-[python-decouple](https://pypi.org/project/python-decouple/), sqlite3 (python3 -m pip install sqlite3), 
-ipfs (for local node) run:
+[python-decouple](https://pypi.org/project/python-decouple/), [truffle](https://trufflesuite.com/docs/truffle/how-to/install/),
+sqlite3 (python3 -m pip install sqlite3), ipfs (for local node) run:
 1. python3.6 -m pip install ipfshttpclient
 2. wget https://dist.ipfs.io/go-ipfs/v0.7.0/go-ipfs_v0.7.0_linux-amd64.tar.gz
 3. tar -xvzf go-ipfs_v0.7.0_linux-amd64.tar.gz
@@ -55,8 +55,9 @@ If there are no errors displayed, the package is correctly installed.
 ### Contracts deployment
 
 The first thing to do is to deploy the smart contract on the blockchain. 
-To do that, create a Metamask wallet and fund an account with some Eth in the Goerli testnet with a Goerli faucet. 
-Then create an account on Infura and obtain a key for the Goerli testnet.
+To do that, create a [Metamask](https://metamask.io/) wallet and fund an account with some Eth in the Goerli testnet 
+with a [Goerli faucet](https://goerlifaucet.com/). Then create an account on [Infura](https://www.infura.io/) 
+and obtain a key for the Goerli testnet.
 
 Enter the 'blockchain' folder and create a '.env' file. Put two constants in there:
 1. 'MNEMONIC'=the secret words of the Metamask wallet
@@ -66,9 +67,13 @@ After doing this, open a terminal and run `truffle init`. Copy the folders 'cont
 and also the 'truffle-config.js' file. Then run `truffle migrate --network goerli` and wait for the deployment of the 
 contract on chain.
 
+### Database creation
+
 When these passages are completed, the databases for all the actors involved in the process need to be created. 
-Move in the 'files' folder and create/copy the folders you need. To create a database run 'sqlite3 name_of_the_database.db'.
-When inside that database run '.read database.sql' to instantiate the database with the right tables.
+Move in the 'files' folder and create/copy the folders you need. To create a database run `sqlite3 name_of_the_database.db`.
+When inside that database run `.read database.sql` to instantiate the database with the right tables.
+
+### Key pairs generation
 
 Once all these preliminary steps are completed, you can start running the actual code. And '.env' file must be created in order
 to store all the necessary values of the constants. This file must be put in the 'architecture' or 'implementation' folder.
