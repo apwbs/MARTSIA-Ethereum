@@ -76,23 +76,29 @@ When inside that database run `.read database.sql` to instantiate the database w
 
 ### Key pairs generation
 
-Once all these preliminary steps are completed, you can start running the actual code. And '.env' file must be created in order
+Once all these preliminary steps are completed, you can start running the actual code. An '.env' file must be created in order
 to store all the necessary values of the constants. This file must be put in the 'architecture' or 'implementation' folder.
 
-The first thing to do is provide a pair of private and public keys to the readers. Open a terminal and move in the 
-architecture or implementation folder and run 'python3 rsa_public_keys.py'. In the file specify the actors
-you intend to give a pair of keys to.
+The first thing to do is provide a pair of private and public keys to the readers. Open a container terminal and move in the 
+architecture or implementation folder and run `python3 rsa_public_keys.py`. In the file, specify the actors you want 
+to give a key pair.
+
+### Attributes assignment
 
 Next, open the attribute certifier file and write down the attributes that you intend to give to the actors of the system.
-Then run 'python3 attribute_certifier.py' to store those values both in the certifier db and on chain. Copy the resulting
+Then run `python3 attribute_certifier.py` to store those values both in the certifier db and on chain. Copy the resulting
 process_instance_id number in the .env file.
 
+### Authorities instantiation
+
 In order to instantiate the four authorities with multi-party computation, open authority1.py, authority2.py
-authority3.py and authority4.py. Consider the lines 185-189 of the first file and lines 182-186 of the remaining three.
+authority3.py and authority4.py. Consider the lines highlighted with `###LINES###` in the files.
 Run the function 'save_authorities_names()' for all the authorities. Then, after all the authorities have completed this step,
 run 'initial_parameters_hashed()' for all the authorities. Then run the other three functions with the same procedure, namely
 run the third function for all the authorities, then the fourth function of all the authorities and so on. At the end of this 
 procedure, the authorities are instantiated via multi-party computation, and they are ready to generate keys for the users.
+
+### Message ciphering and delivering
 
 To cipher a message and store it on the blockchain, open the 'data_owner.py' file. Firstly, run 'generate_pp_pk()' to 
 instantiate the data owner, then modify the file 'data.json' with the data you want to cipher. Then, run the main() function, but
