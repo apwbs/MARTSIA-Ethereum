@@ -18,6 +18,7 @@ other instances. Using `docker exec` you can open as many independent containers
 The following libraries must be installed inside the container: python3.6, [charm](https://github.com/JHUISI/charm), 
 [rsa](https://pypi.org/project/rsa/), [web3](https://web3py.readthedocs.io/en/stable/quickstart.html) (python-version), 
 [python-decouple](https://pypi.org/project/python-decouple/), [truffle](https://trufflesuite.com/docs/truffle/how-to/install/),
+[nodejs and npm](https://nodejs.dev/en/) (recommended node version 16.19.0, npm version 8.19.3), 
 sqlite3 (python3 -m pip install sqlite3), ipfs (for local node) run:
 1. python3.6 -m pip install ipfshttpclient
 2. wget https://dist.ipfs.io/go-ipfs/v0.7.0/go-ipfs_v0.7.0_linux-amd64.tar.gz
