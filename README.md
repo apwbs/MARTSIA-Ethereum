@@ -11,8 +11,8 @@ or more containers from that image. To do this, firstly use the DockerFile runni
 to create a docker image. Then run `docker run -it -v PATH_TO_MARTSIA-EthereumFOLDER/MARTSIA-Ethereum/:/MARTSIA-Ethereum image_name`
 to create a container starting from the image created in the previous step. To run the first instance of a container run
 `docker start container_name`, then run `docker attach container_name`. To run other independent instances of the same container run
-`docker exec -it container_name bin/bash`. (Running other instances (from the second on) of the same container with 
-`docker start` and `docker attach`) will not make them independent. Every command in one instance will be applied also in the
+`docker exec -it container_name bin/bash`. Running other instances (from the second on) of the same container with 
+`docker start` and `docker attach` will not make them independent. Every command in one instance will be applied also in the
 other instances. Using `docker exec` you can open as many independent containers as you like.
 
 The following libraries must be installed inside the container: python3.6, [charm](https://github.com/JHUISI/charm), 
