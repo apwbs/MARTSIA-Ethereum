@@ -70,7 +70,7 @@ def cipher_generated_key(reader_address, process_instance_id, generated_ma_key):
 
 
 def transactions_monitoring():
-    min_round = 8490783
+    min_round = 8495822
     transactions = []
     note = 'generate your part of my key'
     while True:
