@@ -14,6 +14,7 @@ authority3_address = config('AUTHORITY3_ADDRESS')
 authority4_address = config('AUTHORITY4_ADDRESS')
 
 process_instance_id_env = config('PROCESS_INSTANCE_ID')
+message_id_caterpillar = 0
 
 # Connection to SQLite3 data_owner database
 conn = sqlite3.connect('files/reader/reader.db')
@@ -143,6 +144,11 @@ def main(process_instance_id, message_id, slice_id):
                     actual_decryption(remaining, public_parameters, user_sk, ciphertext_dict)
 
 
+def set_message_id(message_id_value):
+    global message_id_caterpillar
+    message_id_caterpillar = message_id_value
+
+
 if __name__ == '__main__':
     groupObj = PairingGroup('SS512')
     maabe = MaabeRW15(groupObj)
@@ -154,3 +160,5 @@ if __name__ == '__main__':
     message_id = 15090073102090092669
     slice_id = 3379834032212897134
     main(process_instance_id, message_id, slice_id)
+
+    # main(process_instance_id, message_id_caterpillar, slice_id)
