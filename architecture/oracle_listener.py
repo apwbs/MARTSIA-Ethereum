@@ -6,7 +6,7 @@ web3 = web3.Web3(web3.Web3.HTTPProvider("http://localhost:8545"))
 
 block = web3.eth.getBlock('latest', True)
 
-smart_contract = '0x99871c693999f09c795cf304c778fc417acfeae3'
+smart_contract = '0x717f9b4ed5c2f410aceb46ff01753b440bd1550b'
 smart_contract = web3.toChecksumAddress(smart_contract)
 
 
@@ -38,6 +38,7 @@ def transactions_monitoring_automatically():
                         ipfs_link = input[138:]
                         ipfs_link = bytes.fromhex(ipfs_link).decode('utf-8')
                         print('ipfs_link:', ipfs_link)
+                        print(transaction)
                         print()
                         # reader.set_message_id(message_ID)
             min_round = min_round + 1
