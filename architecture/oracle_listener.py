@@ -1,3 +1,5 @@
+# docker run --rm -it --network host orlenyslp/caterpillar-demo:v1
+
 import web3
 import time
 import reader
