@@ -3,29 +3,6 @@ pragma solidity >= 0.5.0 < 0.9.0;
 
 contract MARTSIAEth {
 
-  uint public AUTH = 0;
-  uint public AUTHDESTRUCTION = 0;
-  address payable private address_to_pay;
-  address constant public attributeCertifier1 = 0xE594fDE847c1ab4622a6c4B961c87BaC294A4498;
-  address constant public attributeCertifier2 = 0x4F16A60a4181BF33216864acCFdFd61ba82A2Aa1;
-  address constant public attributeCertifier3 = 0x84e83824a78cEAE16C6ED8b4EE2cD55FE648f864;
-  mapping (address => bool) public userAddr;
-  mapping (address => bool) public userAddrDest;
-
-  function updateMajorityCount() public {
-    if (msg.sender == attributeCertifier1 || msg.sender == attributeCertifier2 || msg.sender == attributeCertifier3) {
-      if (userAddr[msg.sender] == false) {
-        AUTH = AUTH + 1;
-        userAddr[msg.sender] = true;
-      }
-    }
-  }
-
-  modifier Majority() {
-    require(AUTH > 1, "No action possible without the majority");
-    _;
-  }
-
   struct authoritiesNames {
     bytes32 hashPart1;
     bytes32 hashPart2;
@@ -89,12 +66,12 @@ contract MARTSIAEth {
   }
   mapping (uint64 => userAttributes) allUsers;
 
-  function setAuthoritiesNames(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public Majority {
+  function setAuthoritiesNames(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {
     authoritiesName[_instanceID][msg.sender].hashPart1 = _hash1;
     authoritiesName[_instanceID][msg.sender].hashPart2 = _hash2;
   }
 
-  function getAuthoritiesNames(address _address, uint64 _instanceID) public view Majority returns (bytes memory) {
+  function getAuthoritiesNames(address _address, uint64 _instanceID) public view returns (bytes memory) {
     bytes32 p1 = authoritiesName[_instanceID][_address].hashPart1;
     bytes32 p2 = authoritiesName[_instanceID][_address].hashPart2;
     bytes memory joined = new bytes(64);
@@ -105,14 +82,14 @@ contract MARTSIAEth {
     return joined;
   }
 
-  function setElementHashed(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2, bytes32 _hash3, bytes32 _hash4) public Majority {
+  function setElementHashed(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2, bytes32 _hash3, bytes32 _hash4) public {
     firstGHashed[_instanceID][msg.sender].hashPart1 = _hash1;
     firstGHashed[_instanceID][msg.sender].hashPart2 = _hash2;
     secondGHashed[_instanceID][msg.sender].hashPart1 = _hash3;
     secondGHashed[_instanceID][msg.sender].hashPart2 = _hash4;
   }
 
-  function getElementHashed(address _address, uint64 _instanceID) public view Majority returns (bytes memory, bytes memory) {
+  function getElementHashed(address _address, uint64 _instanceID) public view returns (bytes memory, bytes memory) {
     bytes32 p1 = firstGHashed[_instanceID][_address].hashPart1;
     bytes32 p2 = firstGHashed[_instanceID][_address].hashPart2;
     bytes32 p3 = secondGHashed[_instanceID][_address].hashPart1;
@@ -130,7 +107,7 @@ contract MARTSIAEth {
     return (joined, joinedsec);
   }
 
-  function setElement(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2, bytes32 _hash3, bytes32 _hash4, bytes32 _hash5, bytes32 _hash6) public Majority {
+  function setElement(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2, bytes32 _hash3, bytes32 _hash4, bytes32 _hash5, bytes32 _hash6) public {
     firstG[_instanceID][msg.sender].hashPart1 = _hash1;
     firstG[_instanceID][msg.sender].hashPart2 = _hash2;
     firstG[_instanceID][msg.sender].hashPart3 = _hash3;
@@ -139,7 +116,7 @@ contract MARTSIAEth {
     secondG[_instanceID][msg.sender].hashPart3 = _hash6;
   }
 
-  function getElement(address _address, uint64 _instanceID) public view Majority returns (bytes memory, bytes32, bytes memory, bytes32) {
+  function getElement(address _address, uint64 _instanceID) public view returns (bytes memory, bytes32, bytes memory, bytes32) {
     bytes32 p1 = firstG[_instanceID][_address].hashPart1;
     bytes32 p2 = firstG[_instanceID][_address].hashPart2;
     bytes32 p3 = firstG[_instanceID][_address].hashPart3;
@@ -160,12 +137,12 @@ contract MARTSIAEth {
     return (joined, p3, joinedsec, p6);
   }
 
-  function setPublicParameters(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public Majority {
+  function setPublicParameters(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {
     parameters[_instanceID][msg.sender].hashPart1 = _hash1;
     parameters[_instanceID][msg.sender].hashPart2 = _hash2;
   }
 
-  function getPublicParameters(address _address, uint64 _instanceID) public view Majority returns (bytes memory) {
+  function getPublicParameters(address _address, uint64 _instanceID) public view returns (bytes memory) {
     bytes32 p1 = parameters[_instanceID][_address].hashPart1;
     bytes32 p2 = parameters[_instanceID][_address].hashPart2;
     bytes memory joined = new bytes(64);
@@ -176,12 +153,12 @@ contract MARTSIAEth {
     return joined;
   }
 
-  function setPublicKey(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public Majority {
+  function setPublicKey(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {
     publicKeys[_instanceID][msg.sender].hashPart1 = _hash1;
     publicKeys[_instanceID][msg.sender].hashPart2 = _hash2;
   }
 
-  function getPublicKey(address _address, uint64 _instanceID) public view Majority returns (bytes memory) {
+  function getPublicKey(address _address, uint64 _instanceID) public view returns (bytes memory) {
     bytes32 p2 = publicKeys[_instanceID][_address].hashPart1;
     bytes32 p3 = publicKeys[_instanceID][_address].hashPart2;
     bytes memory joined = new bytes(64);
@@ -189,15 +166,15 @@ contract MARTSIAEth {
       mstore(add(joined, 32), p2)
       mstore(add(joined, 64), p3)
     }
-    return (joined);
+      return (joined);
   }
 
-  function setPublicKeyReaders(bytes32 _hash1, bytes32 _hash2) public Majority {
+  function setPublicKeyReaders(bytes32 _hash1, bytes32 _hash2) public {
     publicKeysReaders[msg.sender].hashPart1 = _hash1;
     publicKeysReaders[msg.sender].hashPart2 = _hash2;
   }
 
-  function getPublicKeyReaders(address _address) public view Majority returns (bytes memory) {
+  function getPublicKeyReaders(address _address) public view returns (bytes memory) {
     bytes32 p2 = publicKeysReaders[_address].hashPart1;
     bytes32 p3 = publicKeysReaders[_address].hashPart2;
     bytes memory joined = new bytes(64);
@@ -205,16 +182,16 @@ contract MARTSIAEth {
       mstore(add(joined, 32), p2)
       mstore(add(joined, 64), p3)
     }
-    return (joined);
+      return (joined);
   }
 
-  function setIPFSLink(uint64 _messageID, bytes32 _hash1, bytes32 _hash2) public Majority {
+  function setIPFSLink(uint64 _messageID, bytes32 _hash1, bytes32 _hash2) public {
     allLinks[_messageID].sender = msg.sender;
     allLinks[_messageID].hashPart1 = _hash1;
     allLinks[_messageID].hashPart2 = _hash2;
   }
 
-  function getIPFSLink(uint64 _messageID) public view Majority returns (address, bytes memory) {
+  function getIPFSLink(uint64 _messageID) public view returns (address, bytes memory) {
     address sender = allLinks[_messageID].sender;
     bytes32 p1 = allLinks[_messageID].hashPart1;
     bytes32 p2 = allLinks[_messageID].hashPart2;
@@ -226,12 +203,12 @@ contract MARTSIAEth {
     return (sender, joined);
   }
 
-  function setUserAttributes(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public Majority {
+  function setUserAttributes(uint64 _instanceID, bytes32 _hash1, bytes32 _hash2) public {
     allUsers[_instanceID].hashPart1 = _hash1;
     allUsers[_instanceID].hashPart2 = _hash2;
   }
 
-  function getUserAttributes(uint64 _instanceID) public view Majority returns (bytes memory) {
+  function getUserAttributes(uint64 _instanceID) public view returns (bytes memory) {
     bytes32 p1 = allUsers[_instanceID].hashPart1;
     bytes32 p2 = allUsers[_instanceID].hashPart2;
     bytes memory joined = new bytes(64);
@@ -242,16 +219,5 @@ contract MARTSIAEth {
     return joined;
   }
 
-  function dissolve() public {
-    if (msg.sender == attributeCertifier1 || msg.sender == attributeCertifier2 || msg.sender == attributeCertifier3) {
-      if (userAddrDest[msg.sender] == false) {
-        AUTHDESTRUCTION = AUTHDESTRUCTION + 1;
-        userAddrDest[msg.sender] = true;
-      }
-    }
-    if (AUTHDESTRUCTION > 1) {
-      selfdestruct(address_to_pay);
-    }
-  }
-
 }
+
