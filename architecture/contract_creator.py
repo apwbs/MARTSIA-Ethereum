@@ -14,8 +14,7 @@ def create_contract(certificators):
     certificators_addresses = ', '.join(certificators)
     # print("Welcome to {} tutorials".format(attribute_certifier_address))
     # print('Hey %s, your address!' % attribute_certifier_address)
-    contract_in_string = """
-    // SPDX-License-Identifier: CC-BY-SA-4.0
+    contract_in_string = """// SPDX-License-Identifier: CC-BY-SA-4.0
 pragma solidity >= 0.5.0 < 0.9.0;
 
 contract MARTSIAEth {
