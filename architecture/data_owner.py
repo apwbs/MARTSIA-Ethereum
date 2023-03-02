@@ -129,6 +129,7 @@ def main(groupObj, maabe, api, process_instance_id):
 
     f = open('files/data.json')
     data = json.load(f)
+    # '(8785437525079851029@UT and MANUFACTURER@UT) and (8785437525079851029@OU and MANUFACTURER@OU)'
     access_policy = ['(8785437525079851029@UT and 8785437525079851029@OU and 8785437525079851029@OT and '
                      '8785437525079851029@TU) and (MANUFACTURER@UT or '
                      'SUPPLIER@OU)',
