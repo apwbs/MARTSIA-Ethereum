@@ -25,7 +25,7 @@ contract MARTSIAEth {
   }
 
   modifier Majority() {
-    require(AUTH > 1, "No action possible without the majority");
+    require(AUTH > (uint(attributeCertifiers.length) * 2 / 3), "No action possible without the majority");
     _;
   }
 
