@@ -5,8 +5,9 @@
 ## Guide
 
 ### Requirements
+There are two ways to run the system. The first one is to download the corresponding Docker Image for the Ethereum implementation stored at the [Docker Hub](https://hub.docker.com/repository/docker/apwbs/martsia/general).
 
-In order to run the system, it is (strongly) recommended to install Docker and create a new image running Ubuntu 18.04 and then start one
+Otherwise, it is (strongly) recommended to install Docker and create a new image running Ubuntu 18.04 and then start one
 or more containers from that image. To do this, firstly use the DockerFile running `docker build -t image_name PATH_TO_THE_DOCKERFILE/DockerFiles/`
 to create a docker image. Then run `docker run -it -v PATH_TO_MARTSIA-EthereumFOLDER/MARTSIA-Ethereum/:/MARTSIA-Ethereum image_name`
 to create a container starting from the image created in the previous step. To run the first instance of a container run
