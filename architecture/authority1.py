@@ -39,7 +39,7 @@ def save_authorities_names(api, process_instance_id):
     hash_file = api.add_json(file_to_str)
     print(f'ipfs hash: {hash_file}')
 
-    x.execute("INSERT OR IGNORE INTO authority_names VALUES (?,?,?)", (process_instance_id, hash_file, file_to_str))
+    x.execute("INSERT OR IGNORE INTO authority_names VALUES (?,?,?)", (str(process_instance_id), hash_file, file_to_str))
     conn.commit()
 
     block_int.send_authority_names(authority1_address, authority1_private_key, process_instance_id, hash_file)
@@ -50,7 +50,7 @@ def initial_parameters_hashed(groupObj, process_instance_id):
     g2_1 = groupObj.random(G2)
     (h1_1, h2_1) = mpc_setup.commit(groupObj, g1_1, g2_1)
 
-    x.execute("INSERT OR IGNORE INTO h_values VALUES (?,?,?)", (process_instance_id, h1_1, h2_1))
+    x.execute("INSERT OR IGNORE INTO h_values VALUES (?,?,?)", (str(process_instance_id), h1_1, h2_1))
     conn.commit()
 
     block_int.sendHashedElements(authority1_address, authority1_private_key, process_instance_id, (h1_1, h2_1))
@@ -58,12 +58,12 @@ def initial_parameters_hashed(groupObj, process_instance_id):
     g1_1_bytes = groupObj.serialize(g1_1)
     g2_1_bytes = groupObj.serialize(g2_1)
 
-    x.execute("INSERT OR IGNORE INTO g_values VALUES (?,?,?)", (process_instance_id, g1_1_bytes, g2_1_bytes))
+    x.execute("INSERT OR IGNORE INTO g_values VALUES (?,?,?)", (str(process_instance_id), g1_1_bytes, g2_1_bytes))
     conn.commit()
 
 
 def initial_parameters(process_instance_id):
-    x.execute("SELECT * FROM g_values WHERE process_instance=?", (process_instance_id,))
+    x.execute("SELECT * FROM g_values WHERE process_instance=?", (str(process_instance_id),))
     result = x.fetchall()
     g1_1_bytes = result[0][1]
     g2_1_bytes = result[0][2]
@@ -73,14 +73,14 @@ def initial_parameters(process_instance_id):
 
 
 def generate_public_parameters(groupObj, maabe, api, process_instance_id):
-    x.execute("SELECT * FROM g_values WHERE process_instance=?", (process_instance_id,))
+    x.execute("SELECT * FROM g_values WHERE process_instance=?", (str(process_instance_id),))
     result = x.fetchall()
     g1_1_bytes = result[0][1]
     g1_1 = groupObj.deserialize(g1_1_bytes)
     g2_1_bytes = result[0][2]
     g2_1 = groupObj.deserialize(g2_1_bytes)
 
-    x.execute("SELECT * FROM h_values WHERE process_instance=?", (process_instance_id,))
+    x.execute("SELECT * FROM h_values WHERE process_instance=?", (str(process_instance_id),))
     result = x.fetchall()
     h1 = result[0][1]
     h2 = result[0][2]
@@ -136,14 +136,14 @@ def generate_public_parameters(groupObj, maabe, api, process_instance_id):
     hash_file = api.add_json(file_to_str)
     print(f'ipfs hash: {hash_file}')
 
-    x.execute("INSERT OR IGNORE INTO public_parameters VALUES (?,?,?)", (process_instance_id, hash_file, file_to_str))
+    x.execute("INSERT OR IGNORE INTO public_parameters VALUES (?,?,?)", (str(process_instance_id), hash_file, file_to_str))
     conn.commit()
 
     block_int.send_parameters_link(authority1_address, authority1_private_key, process_instance_id, hash_file)
 
 
 def retrieve_public_parameters(process_instance_id):
-    x.execute("SELECT * FROM public_parameters WHERE process_instance=?", (process_instance_id,))
+    x.execute("SELECT * FROM public_parameters WHERE process_instance=?", (str(process_instance_id),))
     result = x.fetchall()
     public_parameters = result[0][2].encode()
     return public_parameters
@@ -166,10 +166,10 @@ def generate_pk_sk(groupObj, maabe, api, process_instance_id):
     hash_file = api.add_json(file_to_str)
     print(f'ipfs hash: {hash_file}')
 
-    x.execute("INSERT OR IGNORE INTO private_keys VALUES (?,?)", (process_instance_id, sk1_bytes))
+    x.execute("INSERT OR IGNORE INTO private_keys VALUES (?,?)", (str(process_instance_id), sk1_bytes))
     conn.commit()
 
-    x.execute("INSERT OR IGNORE INTO public_keys VALUES (?,?,?)", (process_instance_id, hash_file, pk1_bytes))
+    x.execute("INSERT OR IGNORE INTO public_keys VALUES (?,?,?)", (str(process_instance_id), hash_file, pk1_bytes))
     conn.commit()
 
     block_int.send_publicKey_link(authority1_address, authority1_private_key, process_instance_id, hash_file)

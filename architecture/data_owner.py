@@ -43,7 +43,7 @@ def generate_pp_pk(process_instance_id):
     pk1 = pk1.decode('utf-8').rstrip('"').lstrip('"')
     pk1 = pk1.encode('utf-8')
     x.execute("INSERT OR IGNORE INTO authorities_public_keys VALUES (?,?,?,?)",
-              (process_instance_id, 'Auth-1', data[2], pk1))
+              (str(process_instance_id), 'Auth-1', data[2], pk1))
     conn.commit()
 
     data = retrieve_data(authority2_address, process_instance_id)
@@ -53,7 +53,7 @@ def generate_pp_pk(process_instance_id):
     pk2 = pk2.decode('utf-8').rstrip('"').lstrip('"')
     pk2 = pk2.encode('utf-8')
     x.execute("INSERT OR IGNORE INTO authorities_public_keys VALUES (?,?,?,?)",
-              (process_instance_id, 'Auth-2', data[2], pk2))
+              (str(process_instance_id), 'Auth-2', data[2], pk2))
     conn.commit()
 
     data = retrieve_data(authority3_address, process_instance_id)
@@ -63,7 +63,7 @@ def generate_pp_pk(process_instance_id):
     pk3 = pk3.decode('utf-8').rstrip('"').lstrip('"')
     pk3 = pk3.encode('utf-8')
     x.execute("INSERT OR IGNORE INTO authorities_public_keys VALUES (?,?,?,?)",
-              (process_instance_id, 'Auth-3', data[2], pk3))
+              (str(process_instance_id), 'Auth-3', data[2], pk3))
     conn.commit()
 
     data = retrieve_data(authority4_address, process_instance_id)
@@ -73,7 +73,7 @@ def generate_pp_pk(process_instance_id):
     pk4 = pk4.decode('utf-8').rstrip('"').lstrip('"')
     pk4 = pk4.encode('utf-8')
     x.execute("INSERT OR IGNORE INTO authorities_public_keys VALUES (?,?,?,?)",
-              (process_instance_id, 'Auth-4', data[2], pk4))
+              (str(process_instance_id), 'Auth-4', data[2], pk4))
     conn.commit()
 
     if len(set(check_authorities)) == 1 and len(set(check_parameters)) == 1:
@@ -81,12 +81,12 @@ def generate_pp_pk(process_instance_id):
         getfile = getfile.decode('utf-8').rstrip('"').lstrip('"')
         getfile = getfile.encode('utf-8')
         x.execute("INSERT OR IGNORE INTO public_parameters VALUES (?,?,?)",
-                  (process_instance_id, check_parameters[0], getfile))
+                  (str(process_instance_id), check_parameters[0], getfile))
         conn.commit()
 
 
 def retrieve_public_parameters(process_instance_id):
-    x.execute("SELECT * FROM public_parameters WHERE process_instance=?", (process_instance_id,))
+    x.execute("SELECT * FROM public_parameters WHERE process_instance=?", (str(process_instance_id),))
     result = x.fetchall()
     public_parameters = result[0][2]
     return public_parameters
@@ -101,25 +101,25 @@ def main(groupObj, maabe, api, process_instance_id):
     public_parameters["F"] = F
 
     x.execute("SELECT * FROM authorities_public_keys WHERE process_instance=? AND authority_name=?",
-              (process_instance_id, 'Auth-1'))
+              (str(process_instance_id), 'Auth-1'))
     result = x.fetchall()
     pk1 = result[0][3]
     pk1 = bytesToObject(pk1, groupObj)
 
     x.execute("SELECT * FROM authorities_public_keys WHERE process_instance=? AND authority_name=?",
-              (process_instance_id, 'Auth-2'))
+              (str(process_instance_id), 'Auth-2'))
     result = x.fetchall()
     pk2 = result[0][3]
     pk2 = bytesToObject(pk2, groupObj)
 
     x.execute("SELECT * FROM authorities_public_keys WHERE process_instance=? AND authority_name=?",
-              (process_instance_id, 'Auth-3'))
+              (str(process_instance_id), 'Auth-3'))
     result = x.fetchall()
     pk3 = result[0][3]
     pk3 = bytesToObject(pk3, groupObj)
 
     x.execute("SELECT * FROM authorities_public_keys WHERE process_instance=? AND authority_name=?",
-              (process_instance_id, 'Auth-4'))
+              (str(process_instance_id), 'Auth-4'))
     result = x.fetchall()
     pk4 = result[0][3]
     pk4 = bytesToObject(pk4, groupObj)
@@ -203,7 +203,7 @@ def main(groupObj, maabe, api, process_instance_id):
     print(f'ipfs hash: {hash_file}')
 
     x.execute("INSERT OR IGNORE INTO messages VALUES (?,?,?,?)",
-              (process_instance_id, str(message_id), hash_file, str(json_total)))
+              (str(process_instance_id), str(message_id), hash_file, str(json_total)))
     conn.commit()
 
     block_int.send_MessageIPFSLink(dataOwner_address, dataOwner_private_key, message_id, hash_file)
