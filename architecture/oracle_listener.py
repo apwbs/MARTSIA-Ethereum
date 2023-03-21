@@ -8,7 +8,7 @@ web3 = web3.Web3(web3.Web3.HTTPProvider("http://localhost:8545"))
 
 block = web3.eth.getBlock('latest', True)
 
-smart_contract = '0x9341ab6d297f1e2c0ca27d8adfff9ae161af991c'
+smart_contract = '0x4e54403e477ce580b683354fbfebb5053f289dc9'
 smart_contract = web3.toChecksumAddress(smart_contract)
 
 

@@ -127,26 +127,40 @@ def main(groupObj, maabe, api, process_instance_id):
     # public keys authorities
     pk = {'UT': pk1, 'OU': pk2, 'OT': pk3, 'TU': pk4}
 
+    with open('files/data_to_martsia.json', 'r') as file:
+        data = json.load(file)
+    value1 = data['clear_data']
+    _, value = list(data.items())[1]
+    split_value = value[9:].split('\\n')
+    result = {}
+    for item in split_value:
+        key, value = item.split(':')
+        key = ' '.join(key.split())
+        value = ' '.join(value.split())
+        result[key] = value
+    with open('files/data.json', 'w') as file:
+        file.write(json.dumps(result))
+
     f = open('files/data.json')
     data = json.load(f)
     # '(8785437525079851029@UT and MANUFACTURER@UT) and (8785437525079851029@OU and MANUFACTURER@OU)'
-    access_policy = ['(8785437525079851029@UT and 8785437525079851029@OU and 8785437525079851029@OT and '
-                     '8785437525079851029@TU) and (MANUFACTURER@UT or '
-                     'SUPPLIER@OU)',
-                     '(8785437525079851029@UT and 8785437525079851029@OU and 8785437525079851029@OT and '
-                     '8785437525079851029@TU) and (MANUFACTURER@UT or ('
-                     'SUPPLIER@OU and ELECTRONICS@OT)',
-                     '(8785437525079851029@UT and 8785437525079851029@OU and 8785437525079851029@OT and '
-                     '8785437525079851029@TU) and (MANUFACTURER@UT or ('
-                     'SUPPLIER@OU and MECHANICS@TU)']
-
-    entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
-
-    # access_policy = ['(6379627265815999091@UT and 6379627265815999091@OU '
-    #                  'and 6379627265815999091@OT and 6379627265815999091@TU) '
-    #                  'and (MANUFACTURER@UT or SUPPLIER@OU)']
+    # access_policy = ['(8622243175279682462@UT and 8622243175279682462@OU and 8622243175279682462@OT and '
+    #                  '8622243175279682462@TU) and (MANUFACTURER@UT or '
+    #                  'SUPPLIER@OU)',
+    #                  '(8622243175279682462@UT and 8622243175279682462@OU and 8622243175279682462@OT and '
+    #                  '8622243175279682462@TU) and (MANUFACTURER@UT or ('
+    #                  'SUPPLIER@OU and ELECTRONICS@OT)',
+    #                  '(8622243175279682462@UT and 8622243175279682462@OU and 8622243175279682462@OT and '
+    #                  '8622243175279682462@TU) and (MANUFACTURER@UT or ('
+    #                  'SUPPLIER@OU and MECHANICS@TU)']
     #
-    # entries = [list(data.keys())]
+    # entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
+
+    access_policy = ['(8622243175279682462@UT and 8622243175279682462@OU '
+                     'and 8622243175279682462@OT and 8622243175279682462@TU) '
+                     'and (MANUFACTURER@UT or SUPPLIER@OU)']
+
+    entries = [list(data.keys())]
 
     if len(access_policy) != len(entries):
         print('ERROR: The number of policies and entries is different')
@@ -205,6 +219,13 @@ def main(groupObj, maabe, api, process_instance_id):
     x.execute("INSERT OR IGNORE INTO messages VALUES (?,?,?,?)",
               (str(process_instance_id), str(message_id), hash_file, str(json_total)))
     conn.commit()
+
+    hash_to_store = "@MARTSIA:" + hash_file
+    ciphered_file = {}
+    with open('files/ciphered_file.json', 'w') as file:
+        ciphered_file['clear_data'] = value1
+        ciphered_file['martsia'] = hash_to_store
+        file.write(json.dumps(ciphered_file))
 
     block_int.send_MessageIPFSLink(dataOwner_address, dataOwner_private_key, message_id, hash_file)
 
