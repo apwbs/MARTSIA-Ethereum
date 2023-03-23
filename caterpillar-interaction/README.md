@@ -1,1 +1,1 @@
-# Interaction MARTSIA-Ethereum and Caterpillar Interaction
+# Interaction MARTSIA-Ethereum - Caterpillar Interaction
