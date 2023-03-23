@@ -8,7 +8,7 @@ web3 = web3.Web3(web3.Web3.HTTPProvider("http://localhost:8545"))
 
 block = web3.eth.getBlock('latest', True)
 
-smart_contract = '0x4e54403e477ce580b683354fbfebb5053f289dc9'
+smart_contract = '0x35c14ade0d381298c10551026a381e520d924589'
 smart_contract = web3.toChecksumAddress(smart_contract)
 
 
@@ -32,6 +32,9 @@ def transactions_monitoring_automatically():
             for transaction in block.transactions:
                 print(transaction)
                 print()
+                tx_receipt = web3.eth.wait_for_transaction_receipt(transaction['hash'], timeout=600)
+                print(tx_receipt)
+                print('\n\n\n')
                 # if transaction['to'] == smart_contract:
                 #     input = transaction['input']
                 #     input_function = input[2:10]
