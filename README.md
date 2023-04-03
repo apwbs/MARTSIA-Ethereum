@@ -1,11 +1,11 @@
 # MARTSIA-Ethereum
 
-#### This repository contains the Ethereum-based version of the MARTSIA approach. 
+#### This repository contains the implementation of the MARTSIA approach presented in the paper "[MARTSIA: Enabling Data Confidentiality for Blockchain-based Process Execution](https://arxiv.org/abs/2303.17977)". For the **Algorand**-based implementation, please check out [https://github.com/apwbs/MARTSIA-Algorand)! 
 
 ## Guide
 
 ### Requirements
-There are two ways to run the system. The first one is to download the corresponding Docker Image for the Ethereum implementation stored at the [Docker Hub](https://hub.docker.com/repository/docker/apwbs/martsia/general).
+There are two ways to run the system. The first one is to download the corresponding Docker Image for the Ethereum implementation stored at the [Docker Hub](https://hub.docker.com/repository/docker/apwbs/martsia/general). This is the simplest and fastest way to run the system.
 
 Otherwise, it is (strongly) recommended to install Docker and create a new image running Ubuntu 18.04 and then start one
 or more containers from that image. To do this, firstly use the DockerFile running `docker build -t image_name PATH_TO_THE_DOCKERFILE/DockerFiles/`
