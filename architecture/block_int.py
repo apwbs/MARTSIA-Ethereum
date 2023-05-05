@@ -3,7 +3,8 @@ from decouple import config
 import json
 import base64
 
-web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
+# web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
+web3 = Web3(Web3.HTTPProvider("https://polygon-mumbai.g.alchemy.com/v2/vPOruPqyAIJXHPil7CE703mfy8_F4h8m"))
 compiled_contract_path = 'blockchain/build/contracts/MARTSIAEth.json'
 deployed_contract_address = config('CONTRACT_ADDRESS_MARTSIA')
 
