@@ -9,6 +9,7 @@ from maabe_class import *
 from datetime import datetime
 import random
 import sqlite3
+import argparse
 
 authority1_address = config('AUTHORITY1_ADDRESS')
 authority2_address = config('AUTHORITY2_ADDRESS')
@@ -92,7 +93,7 @@ def retrieve_public_parameters(process_instance_id):
     return public_parameters
 
 
-def main(groupObj, maabe, api, process_instance_id):
+def cipher_data(groupObj, maabe, api, process_instance_id):
     response = retrieve_public_parameters(process_instance_id)
     public_parameters = bytesToObject(response, groupObj)
     H = lambda x: self.group.hash(x, G2)
@@ -144,23 +145,22 @@ def main(groupObj, maabe, api, process_instance_id):
     f = open('files/data.json')
     data = json.load(f)
     # '(8785437525079851029@UT and MANUFACTURER@UT) and (8785437525079851029@OU and MANUFACTURER@OU)'
-    # access_policy = ['(8622243175279682462@UT and 8622243175279682462@OU and 8622243175279682462@OT and '
-    #                  '8622243175279682462@TU) and (MANUFACTURER@UT or '
-    #                  'SUPPLIER@OU)',
-    #                  '(8622243175279682462@UT and 8622243175279682462@OU and 8622243175279682462@OT and '
-    #                  '8622243175279682462@TU) and (MANUFACTURER@UT or ('
-    #                  'SUPPLIER@OU and ELECTRONICS@OT)',
-    #                  '(8622243175279682462@UT and 8622243175279682462@OU and 8622243175279682462@OT and '
-    #                  '8622243175279682462@TU) and (MANUFACTURER@UT or ('
-    #                  'SUPPLIER@OU and MECHANICS@TU)']
-    #
-    # entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
+    access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
+                     '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or '
+                     'SUPPLIER@OU)',
+                     '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
+                     '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or ('
+                     'SUPPLIER@OU and ELECTRONICS@OT)',
+                     '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
+                     '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or ('
+                     'SUPPLIER@OU and MECHANICS@TU)']
+    entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
+ 
+    # access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU '
+    #                  'and ' + str(process_instance_id_env) + '@OT and ' + str(process_instance_id_env) + '@TU) '
+    #                  'and (MANUFACTURER@UT or SUPPLIER@OU)']
 
-    access_policy = ['(8622243175279682462@UT and 8622243175279682462@OU '
-                     'and 8622243175279682462@OT and 8622243175279682462@TU) '
-                     'and (MANUFACTURER@UT or SUPPLIER@OU)']
-
-    entries = [list(data.keys())]
+    # entries = [list(data.keys())]
 
     if len(access_policy) != len(entries):
         print('ERROR: The number of policies and entries is different')
@@ -236,5 +236,12 @@ if __name__ == '__main__':
     api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
     process_instance_id = int(process_instance_id_env)
     
-    #generate_pp_pk(process_instance_id)
-    main(groupObj, maabe, api, process_instance_id)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-g' ,'--generate', action='store_true')
+    parser.add_argument('-c','--cipher', action='store_true')
+
+    args = parser.parse_args()
+    if args.generate:
+        generate_pp_pk(process_instance_id)
+    if args.cipher:
+        cipher_data(groupObj, maabe, api, process_instance_id)

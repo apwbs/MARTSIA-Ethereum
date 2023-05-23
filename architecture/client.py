@@ -3,15 +3,16 @@ import ssl
 from decouple import config
 from hashlib import sha512
 import sqlite3
+import argparse
 
 # Connection to SQLite3 reader database
 connection = sqlite3.connect('files/reader/reader.db')
 x = connection.cursor()
 
 HEADER = 64
-PORT = 5065
+PORT = 5051
 FORMAT = 'utf-8'
-server_sni_hostname = 'example.com'
+server_sni_hostname = 'Sapienza'
 DISCONNECT_MESSAGE = "!DISCONNECT"
 SERVER = "172.17.0.2"
 ADDR = (SERVER, PORT)
@@ -84,14 +85,30 @@ reader_address = electronics
 process_instance_id = int(process_instance_id_env)
 gid = "bob"
 
+parser =argparse.ArgumentParser(description="Client request details", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+#parser.add_argument('-m', '--message_id', type=str, default=message_id, help='Message ID')
+#parser.add_argument('-s', '--slice_id', type=str, default=slice_id, help='Slice ID')
+parser.add_argument('-g', '--gid', type=str, default=gid, help='Slice ID')
+parser.add_argument('-rd', '--reader_address', type=str, default=reader_address, help='Reader address')
+
+parser.add_argument('-hs', '--handshake', action='store_true', help='Handshake')
+parser.add_argument('-gs', '--generate_key', action='store_true', help='Generate key')
+#parser.add_argument('-ad','--access_data',  action='store_true', help='Access data')
+args = parser.parse_args()
+
+#message_id = args.message_id
+#slice_id = args.slice_id
+gid = args.gid
+reader_address = args.reader_address
+
 authority = 'Auth-4'
+if args.handshake:
+    send(authority + " - Start handshake||" + str(process_instance_id) + '||' + reader_address)
 
-# send(authority + " - Start handshake||" + str(process_instance_id) + '||' + reader_address)
-
-signature_sending = sign_number(authority)
-
-send(authority + " - Generate your part of my key||" + gid + '||' + str(process_instance_id) + '||' + reader_address
-     + '||' + str(signature_sending))
+if args.generate_key:
+    signature_sending = sign_number(authority)
+    send(authority + " - Generate your part of my key||" + gid + '||' + str(process_instance_id) + '||' + reader_address
+        + '||' + str(signature_sending))
 
 # exit()
 # input()
