@@ -13,8 +13,8 @@ attribute_certifier_address = config('ATTRIBUTE_CERTIFIER_ADDRESS')
 private_key = config('ATTRIBUTE_CERTIFIER_PRIVATEKEY')
 
 manufacturer_address = config('DATAOWNER_MANUFACTURER_ADDRESS')
-supplier1_address = config('READER_ADDRESS_SUPPLIER1')
-supplier2_address = config('READER_ADDRESS_SUPPLIER2')
+supplier1_address = config('READER_SUPPLIER1_ADDRESS')
+supplier2_address = config('READER_SUPPLIER2_ADDRESS')
 
 # Connection to SQLite3 attribute_certifier database
 conn = sqlite3.connect('files/attribute_certifier/attribute_certifier.db')
@@ -52,11 +52,13 @@ def generate_attributes():
     hash_file = api.add_json(file_to_str)
     print(f'ipfs hash: {hash_file}')
 
+    block_int.send_users_attributes(attribute_certifier_address, private_key, process_instance_id, hash_file)
+    
     x.execute("INSERT OR IGNORE INTO user_attributes VALUES (?,?,?)",
               (str(process_instance_id), hash_file, file_to_str))
     conn.commit()
 
-    block_int.send_users_attributes(attribute_certifier_address, private_key, process_instance_id, hash_file)
+    
 
 
 if __name__ == "__main__":

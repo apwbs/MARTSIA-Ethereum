@@ -76,8 +76,8 @@ def send(msg):
 
 
 manufacturer = config('DATAOWNER_MANUFACTURER_ADDRESS')
-electronics = config('READER_ADDRESS_SUPPLIER1')
-mechanics = config('READER_ADDRESS_SUPPLIER2')
+electronics = config('READER_SUPPLIER1_ADDRESS')
+mechanics = config('READER_SUPPLIER2_ADDRESS')
 process_instance_id_env = config('PROCESS_INSTANCE_ID')
 
 reader_address = electronics

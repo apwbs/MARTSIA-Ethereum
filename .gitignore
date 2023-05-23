@@ -1,2 +1,11 @@
 /architecture/blockchain/node_modules/
 /implementation/blockchain/node_modules/
+*.db
+*.DS_Store
+*.env
+architecture/__pycache__
+architecture/API/__pycache__
+architecture/blockchain
+architecture/Keys
+architecture/files/data.json
+lunch_docker.sh

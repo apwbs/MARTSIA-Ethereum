@@ -5,18 +5,16 @@ import ipfshttpclient
 import block_int
 import sqlite3
 import io
+import argparse
 
 api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
-manufacturer_address = config('DATAOWNER_MANUFACTURER_ADDRESS')
-manufacturer_private_key = config('DATAOWNER_MANUFACTURER_PRIVATEKEY')
-electronics_address = config('READER_ADDRESS_SUPPLIER1')
-electronics_private_key = config('READER_PRIVATEKEY_SUPPLIER1')
-mechanics_address = config('READER_ADDRESS_SUPPLIER2')
-mechanics_private_key = config('READER_PRIVATEKEY_SUPPLIER2')
+parser = argparse.ArgumentParser(description='Reader name')
+parser.add_argument('-r', '--reader', type=str, default='MANUFACTURER',help='Reader name')
 
-reader_address = mechanics_address
-private_key = mechanics_private_key
+args = parser.parse_args()
+reader_address = config(args.reader + '_ADDRESS')
+private_key = config(args.reader + '_PRIVATEKEY')
 
 # Connection to SQLite3 reader database
 conn = sqlite3.connect('files/reader/reader.db')
@@ -36,6 +34,8 @@ def generate_keys():
     hash_file = api.add_json(f.read())
     print(f'ipfs hash: {hash_file}')
 
+    block_int.send_publicKey_readers(reader_address, private_key, hash_file)
+
     # reader address not necessary because each user has one key. Since we use only one 'reader/client' for all the
     # readers, we need a distinction.
     x.execute("INSERT OR IGNORE INTO rsa_private_key VALUES (?,?,?)", (reader_address, str(keyPair.n), str(keyPair.d)))
@@ -45,7 +45,7 @@ def generate_keys():
               (reader_address, hash_file, str(keyPair.n), str(keyPair.e)))
     conn.commit()
 
-    block_int.send_publicKey_readers(reader_address, private_key, hash_file)
+    
 
 
 if __name__ == "__main__":
