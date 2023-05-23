@@ -52,11 +52,11 @@ def generate_attributes():
     hash_file = api.add_json(file_to_str)
     print(f'ipfs hash: {hash_file}')
 
+    block_int.send_users_attributes(attribute_certifier_address, private_key, process_instance_id, hash_file)
+
     x.execute("INSERT OR IGNORE INTO user_attributes VALUES (?,?,?)",
               (str(process_instance_id), hash_file, file_to_str))
     conn.commit()
-
-    block_int.send_users_attributes(attribute_certifier_address, private_key, process_instance_id, hash_file)
 
 
 if __name__ == "__main__":

@@ -39,10 +39,11 @@ def save_authorities_names(api, process_instance_id):
     hash_file = api.add_json(file_to_str)
     print(f'ipfs hash: {hash_file}')
 
-    x.execute("INSERT OR IGNORE INTO authority_names VALUES (?,?,?)", (str(process_instance_id), hash_file, file_to_str))
-    conn.commit()
-
     block_int.send_authority_names(authority1_address, authority1_private_key, process_instance_id, hash_file)
+
+    x.execute("INSERT OR IGNORE INTO authority_names VALUES (?,?,?)",
+              (str(process_instance_id), hash_file, file_to_str))
+    conn.commit()
 
 
 def initial_parameters_hashed(groupObj, process_instance_id):
@@ -50,10 +51,10 @@ def initial_parameters_hashed(groupObj, process_instance_id):
     g2_1 = groupObj.random(G2)
     (h1_1, h2_1) = mpc_setup.commit(groupObj, g1_1, g2_1)
 
+    block_int.sendHashedElements(authority1_address, authority1_private_key, process_instance_id, (h1_1, h2_1))
+
     x.execute("INSERT OR IGNORE INTO h_values VALUES (?,?,?)", (str(process_instance_id), h1_1, h2_1))
     conn.commit()
-
-    block_int.sendHashedElements(authority1_address, authority1_private_key, process_instance_id, (h1_1, h2_1))
 
     g1_1_bytes = groupObj.serialize(g1_1)
     g2_1_bytes = groupObj.serialize(g2_1)
@@ -136,7 +137,8 @@ def generate_public_parameters(groupObj, maabe, api, process_instance_id):
     hash_file = api.add_json(file_to_str)
     print(f'ipfs hash: {hash_file}')
 
-    x.execute("INSERT OR IGNORE INTO public_parameters VALUES (?,?,?)", (str(process_instance_id), hash_file, file_to_str))
+    x.execute("INSERT OR IGNORE INTO public_parameters VALUES (?,?,?)",
+              (str(process_instance_id), hash_file, file_to_str))
     conn.commit()
 
     block_int.send_parameters_link(authority1_address, authority1_private_key, process_instance_id, hash_file)

@@ -127,19 +127,19 @@ def main(groupObj, maabe, api, process_instance_id):
     # public keys authorities
     pk = {'UT': pk1, 'OU': pk2, 'OT': pk3, 'TU': pk4}
 
-    with open('files/data_to_martsia.json', 'r') as file:
-        data = json.load(file)
-    value1 = data['clear_data']
-    _, value = list(data.items())[1]
-    split_value = value[9:].split('\\n')
-    result = {}
-    for item in split_value:
-        key, value = item.split(':')
-        key = ' '.join(key.split())
-        value = ' '.join(value.split())
-        result[key] = value
-    with open('files/data.json', 'w') as file:
-        file.write(json.dumps(result))
+    # with open('files/data_to_martsia.json', 'r') as file:
+    #     data = json.load(file)
+    # value1 = data['clear_data']
+    # _, value = list(data.items())[1]
+    # split_value = value[9:].split('\\n')
+    # result = {}
+    # for item in split_value:
+    #     key, value = item.split(':')
+    #     key = ' '.join(key.split())
+    #     value = ' '.join(value.split())
+    #     result[key] = value
+    # with open('files/data.json', 'w') as file:
+    #     file.write(json.dumps(result))
 
     f = open('files/data.json')
     data = json.load(f)
@@ -220,12 +220,12 @@ def main(groupObj, maabe, api, process_instance_id):
               (str(process_instance_id), str(message_id), hash_file, str(json_total)))
     conn.commit()
 
-    hash_to_store = "@MARTSIA:" + hash_file
-    ciphered_file = {}
-    with open('files/ciphered_file.json', 'w') as file:
-        ciphered_file['clear_data'] = value1
-        ciphered_file['martsia'] = hash_to_store
-        file.write(json.dumps(ciphered_file))
+    # hash_to_store = "@MARTSIA:" + hash_file
+    # ciphered_file = {}
+    # with open('files/ciphered_file.json', 'w') as file:
+    #     ciphered_file['clear_data'] = value1
+    #     ciphered_file['martsia'] = hash_to_store
+    #     file.write(json.dumps(ciphered_file))
 
     block_int.send_MessageIPFSLink(dataOwner_address, dataOwner_private_key, message_id, hash_file)
 
