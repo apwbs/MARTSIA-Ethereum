@@ -90,14 +90,25 @@ module.exports = {
     //   skipDryRun: true     // Skip dry run before migrations? (default: false for public nets )
     // },
     mumbai: {
-      provider: () => new HDWalletProvider(process.env.MNEMONIC, 
-      `https://polygon-mumbai.g.alchemy.com/v2/vPOruPqyAIJXHPil7CE703mfy8_F4h8m`),
+      provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://polygon-mumbai.g.alchemy.com/v2/vPOruPqyAIJXHPil7CE703mfy8_F4h8m`),
       network_id: 80001,
       confirmations: 2,
       timeoutBlocks: 200,
       skipDryRun: true,
-      gas: 6000000,
-      gasPrice: 10000000000,
+    },
+    avalanche: {
+      provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://avalanche-fuji.infura.io/v3/059e54a94bca48d893f1b2d45470c002`),
+      network_id: 43113,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
+    },
+    sepolia: {
+      provider: () => new HDWalletProvider(process.env.MNEMONIC, `https://sepolia.infura.io/v3/059e54a94bca48d893f1b2d45470c002`),
+      network_id: 11155111,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true,
     },
     //
     // Useful for private networks
