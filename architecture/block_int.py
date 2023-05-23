@@ -7,6 +7,8 @@ web3 = Web3(Web3.HTTPProvider("https://polygon-mumbai.g.alchemy.com/v2/q-VbORX6j
 compiled_contract_path = 'blockchain/build/contracts/MARTSIAEth.json'
 deployed_contract_address = config('CONTRACT_ADDRESS_MARTSIA')
 
+verbose = False
+
 
 def get_nonce(ETH_address):
     return web3.eth.get_transaction_count(ETH_address)
@@ -29,7 +31,8 @@ def activate_contract(attribute_certifier_address, private_key):
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    if verbose:
+        print(tx_receipt)
 
 
 def send_authority_names(authority_address, private_key, process_instance_id, hash_file):
@@ -52,7 +55,8 @@ def send_authority_names(authority_address, private_key, process_instance_id, ha
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    if verbose:
+        print(tx_receipt)
 
 
 def retrieve_authority_names(authority_address, process_instance_id):
@@ -88,7 +92,8 @@ def sendHashedElements(authority_address, private_key, process_instance_id, elem
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    if verbose:
+        print(tx_receipt)
 
 
 def retrieveHashedElements(eth_address, process_instance_id):
@@ -126,7 +131,8 @@ def sendElements(authority_address, private_key, process_instance_id, elements):
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    if verbose:
+        print(tx_receipt)
 
 
 def retrieveElements(eth_address, process_instance_id):
@@ -164,7 +170,8 @@ def send_parameters_link(authority_address, private_key, process_instance_id, ha
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    if verbose:
+        print(tx_receipt)
 
 
 def retrieve_parameters_link(authority_address, process_instance_id):
@@ -200,8 +207,8 @@ def send_publicKey_link(authority_address, private_key, process_instance_id, has
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
-
+    if verbose:
+        print(tx_receipt)
 
 def retrieve_publicKey_link(eth_address, process_instance_id):
     with open(compiled_contract_path) as file:
@@ -235,7 +242,8 @@ def send_MessageIPFSLink(dataOwner_address, private_key, message_id, hash_file):
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    if verbose:
+        print(tx_receipt)
 
 
 def retrieve_MessageIPFSLink(message_id):
@@ -273,7 +281,8 @@ def send_users_attributes(attribute_certifier_address, private_key, process_inst
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    if verbose:
+        print(tx_receipt)
 
 
 def retrieve_users_attributes(process_instance_id):
@@ -308,7 +317,8 @@ def send_publicKey_readers(reader_address, private_key, hash_file):
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    if verbose:
+        print(tx_receipt)
 
 
 def retrieve_publicKey_readers(reader_address):

@@ -76,10 +76,10 @@ class Authority:
 
 
     def generate_public_parameters(self, groupObj, maabe, api, process_instance_id):
-        self.__x__.execute("SELECT * FROM h_values WHERE process_instance=?", (str(process_instance_id),))
-        result = self.__x__.fetchall()
-        hashes1 = [result[0][1]]
-        hashes2 = [result[0][2]]
+        #self.__x__.execute("SELECT * FROM h_values WHERE process_instance=?", (str(process_instance_id),))
+        #result = self.__x__.fetchall()
+        hashes1 = []
+        hashes2 = []
         com1 = []
         com2 = []
 
@@ -87,15 +87,14 @@ class Authority:
         for auth in authorities_list:
             g1g2_hashed = block_int.retrieveHashedElements(authorities_list[count], process_instance_id)
             if void_bytes in g1g2_hashed:
-                print('g1g2_2_hashed is empty')
                 return False
             g1g2 = block_int.retrieveElements(authorities_list[count], process_instance_id)
             if void_bytes in g1g2:
                 return False
             hashes1.append(g1g2_hashed[0])
             hashes2.append(g1g2_hashed[1])
-            com1.append(g1g2[0])
-            com2.append(g1g2[1])  
+            com1.append(groupObj.deserialize(g1g2[0]))
+            com2.append(groupObj.deserialize(g1g2[1]))
 
             count += 1
 
