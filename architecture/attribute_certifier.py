@@ -58,8 +58,6 @@ def generate_attributes():
               (str(process_instance_id), hash_file, file_to_str))
     conn.commit()
 
-    
-
 
 if __name__ == "__main__":
     generate_attributes()

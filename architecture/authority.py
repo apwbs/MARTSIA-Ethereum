@@ -43,21 +43,20 @@ class Authority:
         hash_file = api.add_json(file_to_str)
         print(f'ipfs hash: {hash_file}')
 
-        self.__x__.execute("INSERT OR IGNORE INTO authority_names VALUES (?,?,?)", (str(process_instance_id), hash_file, file_to_str))
-        self.__conn__.commit()
-
         block_int.send_authority_names(self.authority_address, self.__authority_private_key__, process_instance_id, hash_file)
 
+        self.__x__.execute("INSERT OR IGNORE INTO authority_names VALUES (?,?,?)", (str(process_instance_id), hash_file, file_to_str))
+        self.__conn__.commit()
 
     def initial_parameters_hashed(self, groupObj, process_instance_id):
         g1_1 = groupObj.random(G1)
         g2_1 = groupObj.random(G2)
         (h1_1, h2_1) = mpc_setup.commit(groupObj, g1_1, g2_1)
 
+        block_int.sendHashedElements(self.authority_address, self.__authority_private_key__, process_instance_id, (h1_1, h2_1))
+
         self.__x__.execute("INSERT OR IGNORE INTO h_values VALUES (?,?,?)", (str(process_instance_id), h1_1, h2_1))
         self.__conn__.commit()
-
-        block_int.sendHashedElements(self.authority_address, self.__authority_private_key__, process_instance_id, (h1_1, h2_1))
 
         g1_1_bytes = groupObj.serialize(g1_1)
         g2_1_bytes = groupObj.serialize(g2_1)

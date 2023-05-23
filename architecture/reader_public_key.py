@@ -45,8 +45,6 @@ def generate_keys():
               (reader_address, hash_file, str(keyPair.n), str(keyPair.e)))
     conn.commit()
 
-    
-
 
 if __name__ == "__main__":
     generate_keys()
