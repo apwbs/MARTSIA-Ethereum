@@ -132,7 +132,7 @@ class Authority:
         public_parameters["F"] = F
 
         # authsetup 2AA
-        (pk1, sk1) = maabe.authsetup(public_parameters, 'UT')
+        (pk1, sk1) = maabe.authsetup(public_parameters, authorities_names[self.authority_number -1])
         pk1_bytes = objectToBytes(pk1, groupObj)
         sk1_bytes = objectToBytes(sk1, groupObj)
 

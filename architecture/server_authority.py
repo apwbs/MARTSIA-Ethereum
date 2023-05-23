@@ -5,7 +5,7 @@ import random
 from datetime import datetime
 from hashlib import sha512
 import block_int
-import authority_keygeneration
+import authority_key_generation
 import ipfshttpclient
 import sqlite3
 import argparse
@@ -23,7 +23,7 @@ class AuthorityServer:
         self.authority_number = authority_number
 
     def generate_key_auth(self, gid, process_instance_id, reader_address):
-        return authority_keygeneration.generate_user_key(authority_number, gid, process_instance_id, reader_address)
+        return authority_key_generation.generate_user_key(self.authority_number, gid, process_instance_id, reader_address)
 
     def generate_number_to_sign(self, process_instance_id, reader_address):
         # Connection to SQLite3 authority database
@@ -81,13 +81,15 @@ class AuthorityServer:
                 # print(f"[{addr}] {msg}")
                 # conn.send("Msg received!".encode(FORMAT))
                 message = msg.split('||')
-                if message[0] == "Auth-1 - Start handshake":
-                    number_to_sign = generate_number_to_sign(message[1], message[2])
+                if message[0] == "Auth-" + str(self.authority_number) + " - Start handshake":
+                    number_to_sign = self.generate_number_to_sign(message[1], message[2])
                     conn.send(b'number to sign: ' + str(number_to_sign).encode())
-                if message[0] == "Auth-1 - Generate your part of my key":
-                    if check_handshake(message[2], message[3], message[4]):
-                        user_sk1 = generate_key_auth1(message[1], message[2], message[3])
+                if message[0] == "Auth-" + str(self.authority_number) + " - Generate your part of my key":
+                    if self.check_handshake(message[2], message[3], message[4]):
+                        user_sk1 = self.generate_key_auth(message[1], message[2], message[3])
                         conn.send(user_sk1)
+                    else:
+                        conn.send("")
 
         conn.close()
 
@@ -101,14 +103,14 @@ class AuthorityServer:
         while True:
             newsocket, fromaddr = bindsocket.accept()
             conn = context.wrap_socket(newsocket, server_side=True)
-            thread = threading.Thread(target=handle_client, args=(conn, fromaddr))
+            thread = threading.Thread(target=self.handle_client, args=(conn, fromaddr))
             thread.start()
             print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
 
 
 print("[STARTING] server is starting...")
 parser = argparse.ArgumentParser(description='Authority')
-parser.add_argument('-a', '--authority', type=int, default='MANUFACTURER',help='Authority number')
+parser.add_argument('-a', '--authority', type=int, help='Authority number')
 args = parser.parse_args()
 
 
@@ -117,7 +119,7 @@ if args.authority < 1 or args.authority > number_of_authorities:
     exit()
 
 HEADER = 64
-PORT = 5050 + args.authority - 1
+PORT = 5060 + args.authority - 1
 server_cert = 'client-server/Keys/server.crt'
 server_key = 'client-server/Keys/server.key'
 client_certs = 'client-server/Keys/client.crt'
@@ -138,5 +140,5 @@ bindsocket.listen(5)
 
 
 authority_number = args.authority
-authority_server = AuthorityServer(1)
+authority_server = AuthorityServer(args.authority)
 authority_server.start()

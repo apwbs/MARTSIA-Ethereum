@@ -7,9 +7,10 @@ import block_int
 import sqlite3
 import json
 
+authorities_names = ['UT', 'OU', 'OT', 'TU']
 
 def retrieve_public_parameters(authority_number, process_instance_id):
-    # Connection to SQLite3 authority1 database
+    # Connection to SQLite3 authority database
     conn = sqlite3.connect('files/authority'+ str(authority_number) +'/authority'+ str(authority_number) +'.db')
     x = conn.cursor()
 
@@ -20,7 +21,7 @@ def retrieve_public_parameters(authority_number, process_instance_id):
 
 
 def generate_user_key(authority_number, gid, process_instance_id, reader_address):
-    # Connection to SQLite3 authority1 database
+    # Connection to SQLite3 authority database
     conn = sqlite3.connect('files/authority'+ str(authority_number) +'/authority'+ str(authority_number) +'.db')
     x = conn.cursor()
 
@@ -28,7 +29,7 @@ def generate_user_key(authority_number, gid, process_instance_id, reader_address
     maabe = MaabeRW15(groupObj)
     api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
-    response = retrieve_public_parameters(process_instance_id)
+    response = retrieve_public_parameters(authority_number, process_instance_id)
     public_parameters = bytesToObject(response, groupObj)
     H = lambda x: self.group.hash(x, G2)
     F = lambda x: self.group.hash(x, G2)
@@ -49,7 +50,7 @@ def generate_user_key(authority_number, gid, process_instance_id, reader_address
     getfile = getfile.split(b'####')
     attributes_dict = json.loads(getfile[1].decode('utf-8'))
     user_attr1 = attributes_dict[reader_address]
-    user_attr1 = [k for k in user_attr1 if k.endswith('@UT')]
+    user_attr1 = [k for k in user_attr1 if k.endswith(authorities_names[int(authority_number) - 1])]
     user_sk1 = maabe.multiple_attributes_keygen(public_parameters, sk1, gid, user_attr1)
     user_sk1_bytes = objectToBytes(user_sk1, groupObj)
     return user_sk1_bytes

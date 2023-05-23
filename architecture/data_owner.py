@@ -145,22 +145,25 @@ def cipher_data(groupObj, maabe, api, process_instance_id):
     f = open('files/data.json')
     data = json.load(f)
     # '(8785437525079851029@UT and MANUFACTURER@UT) and (8785437525079851029@OU and MANUFACTURER@OU)'
-    access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
-                     '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or '
-                     'SUPPLIER@OU)',
-                     '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
-                     '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or ('
-                     'SUPPLIER@OU and ELECTRONICS@OT)',
-                     '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
-                     '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or ('
-                     'SUPPLIER@OU and MECHANICS@TU)']
-    entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
+    # access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
+    #                  '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or '
+    #                  'SUPPLIER@OU)',
+    #                  '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
+    #                  '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or ('
+    #                  'SUPPLIER@OU and ELECTRONICS@OT)',
+    #                  '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
+    #                  '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or ('
+    #                  'SUPPLIER@OU and MECHANICS@TU)']
+    #entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
  
-    # access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU '
-    #                  'and ' + str(process_instance_id_env) + '@OT and ' + str(process_instance_id_env) + '@TU) '
-    #                  'and (MANUFACTURER@UT or SUPPLIER@OU)']
-
-    # entries = [list(data.keys())]
+    #
+    access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU '
+                    'and ' + str(process_instance_id_env) + '@OT and ' + str(process_instance_id_env) + '@TU) '
+                    'and (MANUFACTURER@UT or SUPPLIER@OU)',
+                    '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU '
+                    'and ' + str(process_instance_id_env) + '@OT and ' + str(process_instance_id_env) + '@TU) '
+                    'and (MANUFACTURER@UT or SUPPLIER@OU)']
+    entries = [list(data.keys()), list(data.keys())]
 
     if len(access_policy) != len(entries):
         print('ERROR: The number of policies and entries is different')
@@ -235,7 +238,7 @@ if __name__ == '__main__':
     maabe = MaabeRW15(groupObj)
     api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
     process_instance_id = int(process_instance_id_env)
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-g' ,'--generate', action='store_true')
     parser.add_argument('-c','--cipher', action='store_true')
