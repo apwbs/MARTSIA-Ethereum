@@ -2,9 +2,21 @@ from web3 import Web3
 from decouple import config
 import json
 import base64
+# from web3.middleware import geth_poa_middleware  # Avalanche
 
+# Goerli
 # web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
+
+# Mumbai
 web3 = Web3(Web3.HTTPProvider("https://polygon-mumbai.g.alchemy.com/v2/vPOruPqyAIJXHPil7CE703mfy8_F4h8m"))
+
+# Avalanche
+# web3 = Web3(Web3.HTTPProvider("https://avalanche-fuji.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
+# web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+
+# Sepolia
+# web3 = Web3(Web3.HTTPProvider("https://sepolia.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
+
 compiled_contract_path = 'blockchain/build/contracts/MARTSIAEth.json'
 deployed_contract_address = config('CONTRACT_ADDRESS_MARTSIA')
 
@@ -30,7 +42,7 @@ def activate_contract(attribute_certifier_address, private_key):
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    # print(tx_receipt)
 
 
 def send_authority_names(authority_address, private_key, process_instance_id, hash_file):
@@ -53,7 +65,7 @@ def send_authority_names(authority_address, private_key, process_instance_id, ha
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    # print(tx_receipt)
 
 
 def retrieve_authority_names(authority_address, process_instance_id):
@@ -89,7 +101,7 @@ def sendHashedElements(authority_address, private_key, process_instance_id, elem
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    # print(tx_receipt)
 
 
 def retrieveHashedElements(eth_address, process_instance_id):
@@ -127,7 +139,7 @@ def sendElements(authority_address, private_key, process_instance_id, elements):
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    # print(tx_receipt)
 
 
 def retrieveElements(eth_address, process_instance_id):
@@ -165,7 +177,7 @@ def send_parameters_link(authority_address, private_key, process_instance_id, ha
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    # print(tx_receipt)
 
 
 def retrieve_parameters_link(authority_address, process_instance_id):
@@ -201,7 +213,7 @@ def send_publicKey_link(authority_address, private_key, process_instance_id, has
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    # print(tx_receipt)
 
 
 def retrieve_publicKey_link(eth_address, process_instance_id):
@@ -274,7 +286,7 @@ def send_users_attributes(attribute_certifier_address, private_key, process_inst
     transaction_hash = web3.eth.send_raw_transaction(signed_transaction.rawTransaction)
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
-    print(tx_receipt)
+    # print(tx_receipt)
 
 
 def retrieve_users_attributes(process_instance_id):
