@@ -159,11 +159,8 @@ def cipher_data(groupObj, maabe, api, process_instance_id):
     #
     access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU '
                     'and ' + str(process_instance_id_env) + '@OT and ' + str(process_instance_id_env) + '@TU) '
-                    'and (MANUFACTURER@UT or SUPPLIER@OU)',
-                    '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU '
-                    'and ' + str(process_instance_id_env) + '@OT and ' + str(process_instance_id_env) + '@TU) '
                     'and (MANUFACTURER@UT or SUPPLIER@OU)']
-    entries = [list(data.keys()), list(data.keys())]
+    entries = [list(data.keys())]
 
     if len(access_policy) != len(entries):
         print('ERROR: The number of policies and entries is different')

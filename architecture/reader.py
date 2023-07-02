@@ -165,8 +165,8 @@ if __name__ == '__main__':
 
     process_instance_id = int(process_instance_id_env)
     parser =argparse.ArgumentParser(description="Reader details", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-m", "--message_id", type=int, help="message id", default=8723988200629730858)
-    parser.add_argument("-s", "--slice_id", type=int, help="slice id", default=8133391443598696979)
+    parser.add_argument("-m", "--message_id", type=int, help="message id", default=409349685654515625)
+    parser.add_argument("-s", "--slice_id", type=int, help="slice id", default=0)
     parser.add_argument("-g", "--generate", action='store_true', help='Handshake')
     args = parser.parse_args()
     if args.generate:
