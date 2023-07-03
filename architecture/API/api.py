@@ -123,28 +123,9 @@ def accessData():
     #client.disconnect()   
 
     return "Data accessed", 200
-'''
-# This is a full request, it does handshake, generate key and access data
-@app.route('/client/fullrequest/' , methods=['GET', 'POST'])
-def client_fullrequest():
-    reader_address, message_id, slice_id, process_id = getClientArgs(request)
-    if reader_address == '' or message_id == '' or slice_id == '':
-        return "Missing parameters" , 400
-    client = CAKEClient(message_id=message_id, reader_address=reader_address, slice_id=slice_id, process_instance_id= process_id)
-    client.handshake()
-    print("Handshake launched")
-    client = CAKEClient(message_id=message_id, reader_address=reader_address, slice_id=slice_id, process_instance_id= process_id)
-    client.generate_key()
-    print("Key generation launched")    
-    client = CAKEClient(message_id=message_id, reader_address=reader_address, slice_id=slice_id, process_instance_id= process_id)
-    client.access_data()
-    print("Data access launched")
-    return "Handshake completed"
-'''
-
 ##### Request from Data Owner to SDM Server #####
 
-@app.route('/dataOwner/handshake/' , methods=['POST'])
+@app.route('/dataOwner/generate_pp_pk/' , methods=['POST'])
 def data_owner_handshake():
     """ Request to the SDM Server to handshaking
 
@@ -158,7 +139,7 @@ def data_owner_handshake():
         The status of the request, 200 if the handshake is completed
     """
     data_owner = CAKEDataOwner(process_instance_id=request.json.get('process_id'))
-    data_owner.handshake()
+    data_owner.generate_pp_pk()
     return "Handshake completed"
 
 @app.route('/dataOwner/cipher/', methods=['POST'])
@@ -204,36 +185,10 @@ def cipher():
         row_id = -1
     else:
         row_id = int(row_id)
-    data_owner = CAKEDataOwner(process_instance_id=request.json.get('process_id'), row_id=row_id)
+    data_owner = CAKEDataOwner(process_instance_id=request.json.get('process_id'))
     data_owner.cipher_data(message, entries_string, policy_string)
     return "Cipher completed"
 
-'''
-@app.route('/dataOwner/fullrequest/', methods=['POST'])
-def dataowner_fullrequest():
-    message = request.json.get('message')
-    if len(message) == 0:
-        return "Missing parameters" , 400
-    entries = request.json.get('entries')
-    policy = request.json.get('policy')
-    if len(entries) == 0:
-        return "Missing parameters" , 400
-    if len(policy) == 0:
-        return "Missing parameters" , 400
-    
-    #TODO: Check if it is mandatory
-    if len(entries) != len(policy):
-        return "Entries and policy legth doesn't match" , 400   
-
-    entries_string = '###'.join(str(x) for x in entries)
-    policy_string = '###'.join(str(x) for x in policy)
-    message = json.dumps(message)
-    data_owner = CAKEDataOwner(process_instance_id=request.json.get('process_id'))
-    data_owner.handshake()
-    data_owner = CAKEDataOwner(process_instance_id=request.json.get('process_id'))
-    data_owner.cipher_data(message, entries_string, policy_string)
-    return "Full request completed"
-'''
     
 @app.route('/certification/', methods=['POST'])
 def certification():

@@ -106,7 +106,12 @@ class CAKEDataOwner:
         return public_parameters
 
 
-    def cipher_data(self, groupObj, maabe, api, process_instance_id):
+    def cipher_data(self, data, entries, access_policy):
+
+        groupObj = PairingGroup('SS512')
+        maabe = MaabeRW15(groupObj)
+        api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
+
         response = self.__retrieve_public_parameters__()
         public_parameters = bytesToObject(response, groupObj)
         H = lambda x: self.group.hash(x, G2) #questo self c'era già prima, forse va in conflitto con l'uso di self nella funzione, possibile soluzione una funzione statics
@@ -156,8 +161,6 @@ class CAKEDataOwner:
         #     file.write(json.dumps(result))
        
         #This informations should be given by the user as input
-        f = open('files/data.json')
-        data = json.load(f)
         # '(8785437525079851029@UT and MANUFACTURER@UT) and (8785437525079851029@OU and MANUFACTURER@OU)'
         # access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
         #                  '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or '
@@ -171,10 +174,6 @@ class CAKEDataOwner:
         #entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
     
         #
-        access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU '
-                        'and ' + str(process_instance_id_env) + '@OT and ' + str(process_instance_id_env) + '@TU) '
-                        'and (MANUFACTURER@UT or SUPPLIER@OU)']
-        entries = [list(data.keys())]
 
         if len(access_policy) != len(entries):
             print('ERROR: The number of policies and entries is different')
