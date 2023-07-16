@@ -9,6 +9,8 @@ from CAKEDataOwner import CAKEDataOwner
 
 app = Flask(__name__)
 
+numberOfAuthorities = 4
+
 def getClientArgs(request):
     """ Read the arguments from the client request
 
@@ -26,8 +28,7 @@ def getClientArgs(request):
     """
     process_id = request.json.get('process_id')
     reader_address = request.json.get('reader_address')
-    message_id = request.json.get('message_id')
-    slice_id = request.json.get('slice_id')
+    gid = request.json.get('gid')
 
     '''
     print("Reader_address is: " + reader_address)
@@ -36,7 +37,7 @@ def getClientArgs(request):
         print("Slice_id is: " + slice_id)
     print("Process_id is: " + str(process_id))
     '''
-    return reader_address, message_id, slice_id, process_id
+    return reader_address, process_id, gid
 
 @app.route('/')
 def go_home():
@@ -66,10 +67,10 @@ def client_handshake():
     Returns:
         The status of the request, 200 if the handshake is completed
     """
-    reader_address, message_id, _, process_id = getClientArgs(request)
-    if reader_address == '' or message_id == '':
+    reader_address, process_id, gid = getClientArgs(request)
+    if reader_address == '' or process_id == '' or gid == '':
         return "Missing parameters" , 400   
-    client = CAKEClient(message_id=message_id, reader_address=reader_address, process_instance_id=process_id)
+    client = CAKEClient(reader_address=reader_address, process_instance_id=process_id, gid=gid)
     client.handshake()
     #client.disconnect()
     return "Handshake completed" , 200
@@ -90,39 +91,13 @@ def generateKey():
     Returns:
         The status of the request, 200 if the key is generated
     """
-    reader_address, message_id, _, process_id = getClientArgs(request)
-    if reader_address == '' or message_id == '':
-        print("Missing parameters")
-        return "Missing parameters" , 400
-    client = CAKEClient(message_id=message_id, reader_address=reader_address, process_instance_id = process_id)
+    reader_address, process_id, gid= getClientArgs(request)
+    if reader_address == '' or process_id == '' or gid == '':
+        return "Missing parameters" , 400   
+    client = CAKEClient(reader_address=reader_address, process_instance_id = process_id, gid=gid)
     client.generate_key()
     return "Key generated", 200
 
-@app.route('/client/accessData/' , methods=['POST'])
-def accessData():
-    """ Request to the SKM Server to access data
-
-    This function is used to send a request to the SKM Server
-    to access data from the reader.
-    The data is accessed only if the reader already has the key.
-
-    Args:
-        reader_address: the address of the reader
-        message_id: the id of the message
-        slice_id: the id of the slice
-        process_id: the id of the process (process_instance_id)    
-
-    Returns: 
-        The status of the request, 200 if the data is accessed
-    """
-    reader_address, message_id, slice_id, process_id = getClientArgs(request)
-    if reader_address == '' or message_id == '' or slice_id == '':
-        return "Missing parameters" , 400
-    client = CAKEClient(message_id=message_id, reader_address=reader_address, slice_id=slice_id, process_instance_id= process_id)
-    client.access_data()
-    #client.disconnect()   
-
-    return "Data accessed", 200
 ##### Request from Data Owner to SDM Server #####
 
 @app.route('/dataOwner/generate_pp_pk/' , methods=['POST'])
