@@ -72,8 +72,8 @@ class Certifier():
         api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
         print("Reading keys of " + actor_name)
-        reader_address = config('ADDRESS_' + actor_name)
-        private_key = config('PRIVATEKEY_' + actor_name)
+        reader_address = config(actor_name + '_ADDRESS')
+        private_key = config(actor_name + '_PRIVATEKEY')
 
         # Connection to SQLite3 reader database
         conn = sqlite3.connect('files/reader/reader.db')
@@ -135,8 +135,8 @@ class Certifier():
 
         api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001') # Connect to local IPFS node (creo un nodo locale di ipfs)
 
-        certifier_address = config('CERTIFIER_ADDRESS')
-        certifier_private_key = config('CERTIFIER_PRIVATEKEY')
+        certifier_address = config('ATTRIBUTE_CERTIFIER_ADDRESS')
+        certifier_private_key = config('ATTRIBUTE_CERTIFIER_PRIVATEKEY')
 
         # Connection to SQLite3 attribute_certifier database
         conn = sqlite3.connect('files/attribute_certifier/attribute_certifier.db') # Connect to the database
@@ -150,7 +150,7 @@ class Certifier():
 
         dict_users = {}
         for actor, list_roles in roles.items():
-            dict_users[config('ADDRESS_' + actor)] = [str(process_instance_id)+'@'+name for name in authorities_names] + [role for role in list_roles]
+            dict_users[config(actor + '_ADDRESS')] = [str(process_instance_id)+'@'+name for name in authorities_names] + [role for role in list_roles]
         
 
         f = io.StringIO()

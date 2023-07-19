@@ -1,14 +1,17 @@
 import sqlite3
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import json
 from decouple import config
 from hashlib import sha512
 from certifier import Certifier
 from CAKEClient import CAKEClient
 from CAKEDataOwner import CAKEDataOwner
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
+CORS(app)
 
+    
 numberOfAuthorities = 4
 
 def getClientArgs(request):
@@ -49,10 +52,10 @@ def go_home():
     Returns:
         A welcome message
     """
-    return 'Welcome to the CAKE API'
+    return 'Welcome to the CAKE API', 200
 
 #### Request from client to SKM Server ####
-@app.route('/client/handshake/' , methods=['POST'])
+@app.route('/client/handshake/' , methods=['GET', 'POST'], strict_slashes=False)
 def client_handshake():
     """ Request to the SKM Server to handshaking
 
@@ -225,4 +228,4 @@ def attribute_certification():
     return str(process_instance_id), 200
 
 if __name__ == '__main__':
-    app.run(port=8888)
+    app.run(host="0.0.0.0", port="8888")
