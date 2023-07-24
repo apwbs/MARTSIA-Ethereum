@@ -5,6 +5,7 @@ from decouple import config
 from hashlib import sha512
 from certifier import Certifier
 from MARTSIAClient import MARTSIAClient
+from MARTSIAReader import MARTSIAReader
 from MARTSIADataOwner import MARTSIADataOwner
 from flask_cors import CORS, cross_origin
 
@@ -54,6 +55,33 @@ def go_home():
     """
     return 'Welcome to the MARTSIA API', 200
 
+#### Request from client to read ####
+@app.route('/read/' , methods=['GET', 'POST'], strict_slashes=False)
+def read():
+    """
+    This function is used to read a file from the reader
+    
+    Args:
+        message_id: the id of the message
+        slice_id: the id of the slice
+    """
+
+    reader = MARTSIAReader(request.json.get('process_id'), numberOfAuthorities)
+    
+    if request.json.get('generate'):
+        print("Generating public parameters")
+        reader.generate_public_parameters()
+
+    message_id = request.json.get('message_id')
+    slice_id = request.json.get('slice_id')
+    gid = request.json.get('gid')
+    if message_id == '' or slice_id == '' or gid == '':
+        return "Missing parameters" , 400
+    reader.read(message_id, slice_id, gid)
+    return "Read completed", 200
+    
+
+
 #### Request from client to SKM Server ####
 @app.route('/client/handshake/' , methods=['GET', 'POST'], strict_slashes=False)
 def client_handshake():
@@ -98,7 +126,6 @@ def generateKey():
     reader_address, process_id, gid= getClientArgs(request)
     if reader_address == '' or process_id == '' or gid == '':
         return "Missing parameters" , 400   
-    print("process_id: " + process_id)
     for i in range(1, numberOfAuthorities + 1):
         client = MARTSIAClient(reader_address=reader_address, process_instance_id=process_id, gid=gid, authority=i)
         client.generate_key()

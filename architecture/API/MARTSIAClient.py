@@ -23,9 +23,7 @@ class MARTSIAClient(MARTSIABridge):
             slice_id (str, optional): slice id. Defaults to "".
             
         """
-        print(process_instance_id)
         super().__init__(path_to_db='files/reader/reader.db', port=5060 + authority - 1, process_instance_id=process_instance_id)
-        print("Process instance id:", self.process_instance_id)
         self.__setArgs__(message_id, reader_address, gid, authority)
         return
 
@@ -81,9 +79,7 @@ class MARTSIAClient(MARTSIABridge):
     def handshake(self):
         """Start the handshake with the MARTSIA SKM server"""
         self.send(self.authority + " - Start handshake§" + str(self.process_instance_id) + '§' + self.reader_address)
-        print("Handshake started")
         self.disconnect()
-        print("have to disconnect")
         return
     
     def generate_key(self):
@@ -98,10 +94,7 @@ class MARTSIAClient(MARTSIABridge):
     def sign_number(self, authority_invoked):
         self.x.execute("SELECT * FROM handshake_number WHERE process_instance=? AND authority_name=?",
                 (str(self.process_instance_id), authority_invoked))
-        print(self.process_instance_id)
-        print(authority_invoked)
         result = self.x.fetchall()
-        print(result)
         number_to_sign = result[0][2]
 
         self.x.execute("SELECT * FROM rsa_private_key WHERE reader_address=?", (self.reader_address,))
