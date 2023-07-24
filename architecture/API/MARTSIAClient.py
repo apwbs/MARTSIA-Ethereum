@@ -1,12 +1,12 @@
 from decouple import config
 from hashlib import sha512
-from CAKEBridge import CAKEBridge
+from MARTSIABridge import MARTSIABridge
 
 ### This class is equivalent to the content of ../client.py
-class CAKEClient(CAKEBridge):
-    """A client to communicate with the CAKE SKM server
+class MARTSIAClient(MARTSIABridge):
+    """A client to communicate with the MARTSIA SKM server
 
-    A class to manage the communication with the CAKE SKM server
+    A class to manage the communication with the MARTSIA SKM server
 
     Attributes:
         message_id (str): message id
@@ -14,7 +14,7 @@ class CAKEClient(CAKEBridge):
         slice_id (str): slice id
     """
     def __init__(self, process_instance_id = config('PROCESS_INSTANCE_ID'), message_id = "", reader_address = "", gid = "", authority = 0):
-        """Initialize the CAKEClient class
+        """Initialize the MARTSIAClient class
         
         Args:
             process_instance_id (int, optional): process instance id. Defaults to config('PROCESS_INSTANCE_ID').
@@ -23,7 +23,9 @@ class CAKEClient(CAKEBridge):
             slice_id (str, optional): slice id. Defaults to "".
             
         """
-        super().__init__(path_to_db='files/reader/reader.db', port=int(config('SKM_PORT')), process_instance_id=process_instance_id)
+        print(process_instance_id)
+        super().__init__(path_to_db='files/reader/reader.db', port=5060 + authority - 1, process_instance_id=process_instance_id)
+        print("Process instance id:", self.process_instance_id)
         self.__setArgs__(message_id, reader_address, gid, authority)
         return
 
@@ -36,6 +38,7 @@ class CAKEClient(CAKEBridge):
             message_id (str): message id
             reader_address (str): reader address
             gid (str): gid.
+            authority (int): number of the authority to contact.
         """
         self.message_id = message_id
         self.reader_address = reader_address
@@ -47,9 +50,9 @@ class CAKEClient(CAKEBridge):
         return
 
     def send(self, msg):
-        """Send a message to the CAKE SKM server
+        """Send a message to the MARTSIA SKM server
 
-        Send a message to the CAKE SKM server and receive a response
+        Send a message to the MARTSIA SKM server and receive a response
 
         Args:
             msg (str): message to send
@@ -76,16 +79,18 @@ class CAKEClient(CAKEBridge):
             self.connection.commit()
     
     def handshake(self):
-        """Start the handshake with the CAKE SKM server"""
-        self.send(self.authority + " - Start handshake||" + str(self.process_instance_id) + '||' + self.reader_address)
+        """Start the handshake with the MARTSIA SKM server"""
+        self.send(self.authority + " - Start handshake§" + str(self.process_instance_id) + '§' + self.reader_address)
+        print("Handshake started")
         self.disconnect()
+        print("have to disconnect")
         return
     
     def generate_key(self):
         """Generate the key for the reader"""
-        signature_sending = self.sign_number()
-        self.send(self.authority + " - Generate your part of my key||" + self.gid + '||' + str(self.process_instance_id) + '||' + self.reader_address
-        + '||' + str(signature_sending))
+        signature_sending = self.sign_number(self.authority)
+        self.send(self.authority + " - Generate your part of my key§" + self.gid + '§' + str(self.process_instance_id) + '§' + self.reader_address
+        + '§' + str(signature_sending))
         self.disconnect()
         return
 
@@ -93,7 +98,10 @@ class CAKEClient(CAKEBridge):
     def sign_number(self, authority_invoked):
         self.x.execute("SELECT * FROM handshake_number WHERE process_instance=? AND authority_name=?",
                 (str(self.process_instance_id), authority_invoked))
+        print(self.process_instance_id)
+        print(authority_invoked)
         result = self.x.fetchall()
+        print(result)
         number_to_sign = result[0][2]
 
         self.x.execute("SELECT * FROM rsa_private_key WHERE reader_address=?", (self.reader_address,))

@@ -106,12 +106,12 @@ conn = context.wrap_socket(s, server_side=False, server_hostname=server_sni_host
 conn.connect(ADDR)
 
 if args.handshake:
-    send(authority + " - Start handshake||" + str(process_instance_id) + '||' + reader_address)
+    send(authority + " - Start handshake§" + str(process_instance_id) + '§' + reader_address)
 
 elif args.generate_key:
     signature_sending = sign_number(authority)
-    send(authority + " - Generate your part of my key||" + gid + '||' + str(process_instance_id) + '||' + reader_address
-        + '||' + str(signature_sending))
+    send(authority + " - Generate your part of my key§" + gid + '§' + str(process_instance_id) + '§' + reader_address
+        + '§' + str(signature_sending))
 
 # exit()
 # input()

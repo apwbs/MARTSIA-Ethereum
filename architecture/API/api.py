@@ -4,8 +4,8 @@ import json
 from decouple import config
 from hashlib import sha512
 from certifier import Certifier
-from CAKEClient import CAKEClient
-from CAKEDataOwner import CAKEDataOwner
+from MARTSIAClient import MARTSIAClient
+from MARTSIADataOwner import MARTSIADataOwner
 from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
@@ -18,7 +18,7 @@ def getClientArgs(request):
     """ Read the arguments from the client request
 
     This function is used to get the arguments from the client request
-    and return them in the correct format to be used by the CAKEClient
+    and return them in the correct format to be used by the MARTSIAClient
 
     Args:
         request: the request from the client
@@ -52,7 +52,7 @@ def go_home():
     Returns:
         A welcome message
     """
-    return 'Welcome to the CAKE API', 200
+    return 'Welcome to the MARTSIA API', 200
 
 #### Request from client to SKM Server ####
 @app.route('/client/handshake/' , methods=['GET', 'POST'], strict_slashes=False)
@@ -73,12 +73,13 @@ def client_handshake():
     reader_address, process_id, gid = getClientArgs(request)
     if reader_address == '' or process_id == '' or gid == '':
         return "Missing parameters" , 400   
-    client = CAKEClient(reader_address=reader_address, process_instance_id=process_id, gid=gid)
-    client.handshake()
+    for i in range(1, numberOfAuthorities + 1):
+        client = MARTSIAClient(reader_address=reader_address, process_instance_id=process_id, gid=gid, authority=i)
+        client.handshake()
     #client.disconnect()
     return "Handshake completed" , 200
 
-@app.route('/client/generateKey/' , methods=['POST'])
+@app.route('/client/generateKey/' , methods=['POST'], strict_slashes=False)
 def generateKey():
     """ Request to the SKM Server to generate a key
 
@@ -88,7 +89,7 @@ def generateKey():
     
     Args:
         reader_address: the address of the reader
-        message_id: the id of the message
+        message_id: the id of the message   
         process_id: the id of the process (process_instance_id)
         
     Returns:
@@ -97,13 +98,15 @@ def generateKey():
     reader_address, process_id, gid= getClientArgs(request)
     if reader_address == '' or process_id == '' or gid == '':
         return "Missing parameters" , 400   
-    client = CAKEClient(reader_address=reader_address, process_instance_id = process_id, gid=gid)
-    client.generate_key()
+    print("process_id: " + process_id)
+    for i in range(1, numberOfAuthorities + 1):
+        client = MARTSIAClient(reader_address=reader_address, process_instance_id=process_id, gid=gid, authority=i)
+        client.generate_key()
     return "Key generated", 200
 
 ##### Request from Data Owner to SDM Server #####
 
-@app.route('/dataOwner/generate_pp_pk/' , methods=['POST'])
+@app.route('/dataOwner/generate_pp_pk/' , methods=['POST'], strict_slashes=False)
 def data_owner_handshake():
     """ Request to the SDM Server to handshaking
 
@@ -116,11 +119,11 @@ def data_owner_handshake():
     Returns:
         The status of the request, 200 if the handshake is completed
     """
-    data_owner = CAKEDataOwner(process_instance_id=request.json.get('process_id'))
+    data_owner = MARTSIADataOwner(process_instance_id=request.json.get('process_id'))
     data_owner.generate_pp_pk()
     return "Handshake completed"
 
-@app.route('/dataOwner/cipher/', methods=['POST'])
+@app.route('/dataOwner/cipher/', methods=['POST'], strict_slashes=False)
 def cipher():
     """ Request to the SDM Server to cipher the message from the Manufacturer
 
@@ -139,13 +142,13 @@ def cipher():
     """
     message = request.json.get('message')
     if len(message) == 0:
-        return "Missing parameters" , 400
+        return "Missing parameters (message)" , 401
     entries = request.json.get('entries')
     policy = request.json.get('policy')
     if len(entries) == 0:
-        return "Missing parameters" , 400
+        return "Missing parameters (entries)" , 402
     if len(policy) == 0:
-        return "Missing parameters" , 400
+        return "Missing parameters (policy)" , 403
     #TODO: Check if it is mandatory
     if len(entries) != len(policy):
         print("Entries and policy legth doesn't match")
@@ -153,22 +156,22 @@ def cipher():
         print(entries)
         print("Policy: " + str(len(policy)))
         print(policy)
-        return "Entries and policy legth doesn't match" , 400  
+        return "Entries and policy legth doesn't match" , 410 
 
-    entries_string = '###'.join(str(x) for x in entries)
-    policy_string = '###'.join(str(x) for x in policy)
+    #entries_string = '###'.join(str(x) for x in entries)
+    #policy_string = '###'.join(str(x) for x in policy)
 
     row_id = request.json.get('id')
-    if row_id == '':
+    if row_id == None:
         row_id = -1
     else:
         row_id = int(row_id)
-    data_owner = CAKEDataOwner(process_instance_id=request.json.get('process_id'))
-    data_owner.cipher_data(message, entries_string, policy_string)
+    data_owner = MARTSIADataOwner(process_instance_id=request.json.get('process_id'))
+    data_owner.cipher_data(message, entries, policy)
     return "Cipher completed"
 
     
-@app.route('/certification/', methods=['POST'])
+@app.route('/certification/', methods=['POST'],strict_slashes=False)
 def certification():
     """ Request to to certify the actors
     
@@ -188,7 +191,7 @@ def certification():
     process_instance_id = Certifier.certify(actors, roles)
     return str(process_instance_id), 200
 
-@app.route('/certification/readpublickey/', methods=['POST'])
+@app.route('/certification/readpublickey/', methods=['POST'], strict_slashes=False)
 def read_public_key():
     """ Read the public keys of the actors
 
@@ -207,7 +210,7 @@ def read_public_key():
     Certifier.read_public_key(actors)
     return "Public keys read"
 
-@app.route('/certification/attributecertification/', methods=['POST'])
+@app.route('/certification/attributecertification/', methods=['POST'], strict_slashes=False)
 def attribute_certification():
     """ Certificate the actors
 

@@ -19,13 +19,9 @@ authority4_address = config('AUTHORITY4_ADDRESS')
 dataOwner_address = config('DATAOWNER_MANUFACTURER_ADDRESS')
 dataOwner_private_key = config('DATAOWNER_MANUFACTURER_PRIVATEKEY')
 
-process_instance_id_env = config('PROCESS_INSTANCE_ID')
+#process_instance_id_env = config('PROCESS_INSTANCE_ID')
 
-# Connection to SQLite3 data_owner database
-conn = sqlite3.connect('files/data_owner/data_owner.db')
-x = conn.cursor()
-
-class CAKEDataOwner:
+class MARTSIADataOwner:
     def __init__(self, process_instance_id):
         self.authority1_address = config('AUTHORITY1_ADDRESS')
         self.authority2_address = config('AUTHORITY2_ADDRESS')
@@ -35,9 +31,15 @@ class CAKEDataOwner:
         self.dataOwner_address = config('DATAOWNER_MANUFACTURER_ADDRESS')
         self.dataOwner_private_key = config('DATAOWNER_MANUFACTURER_PRIVATEKEY')
 
-        self.process_instance_id_env = process_instance_id
+        #self.process_instance_id_env = process_instance_id
         self.conn = sqlite3.connect('files/data_owner/data_owner.db')
-        self.x = conn.cursor()
+        self.x = self.conn.cursor()
+
+        self.groupObj = PairingGroup('SS512')
+        self.maabe = MaabeRW15(self.groupObj)
+        self.api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
+        self.process_instance_id = process_instance_id
+
 
     def __retrieve_data__(self, authority_address):
         authorities = block_int.retrieve_authority_names(authority_address, self.process_instance_id)
@@ -53,7 +55,7 @@ class CAKEDataOwner:
         data = self.__retrieve_data__(authority1_address)
         check_authorities.append(data[0])
         check_parameters.append(data[1])
-        pk1 = api.cat(data[2])
+        pk1 = self.api.cat(data[2])
         pk1 = pk1.decode('utf-8').rstrip('"').lstrip('"')
         pk1 = pk1.encode('utf-8')
         self.x.execute("INSERT OR IGNORE INTO authorities_public_keys VALUES (?,?,?,?)",
@@ -63,7 +65,7 @@ class CAKEDataOwner:
         data = self.__retrieve_data__(authority2_address)
         check_authorities.append(data[0])
         check_parameters.append(data[1])
-        pk2 = api.cat(data[2])
+        pk2 = self.api.cat(data[2])
         pk2 = pk2.decode('utf-8').rstrip('"').lstrip('"')
         pk2 = pk2.encode('utf-8')
         self.x.execute("INSERT OR IGNORE INTO authorities_public_keys VALUES (?,?,?,?)",
@@ -73,7 +75,7 @@ class CAKEDataOwner:
         data = self.__retrieve_data__(authority3_address)
         check_authorities.append(data[0])
         check_parameters.append(data[1])
-        pk3 = api.cat(data[2])
+        pk3 = self.api.cat(data[2])
         pk3 = pk3.decode('utf-8').rstrip('"').lstrip('"')
         pk3 = pk3.encode('utf-8')
         self.x.execute("INSERT OR IGNORE INTO authorities_public_keys VALUES (?,?,?,?)",
@@ -83,7 +85,7 @@ class CAKEDataOwner:
         data = self.__retrieve_data__(authority4_address)
         check_authorities.append(data[0])
         check_parameters.append(data[1])
-        pk4 = api.cat(data[2])
+        pk4 = self.api.cat(data[2])
         pk4 = pk4.decode('utf-8').rstrip('"').lstrip('"')
         pk4 = pk4.encode('utf-8')
         self.x.execute("INSERT OR IGNORE INTO authorities_public_keys VALUES (?,?,?,?)",
@@ -91,7 +93,7 @@ class CAKEDataOwner:
         self.conn.commit()
 
         if len(set(check_authorities)) == 1 and len(set(check_parameters)) == 1:
-            getfile = api.cat(check_parameters[0])
+            getfile = self.api.cat(check_parameters[0])
             getfile = getfile.decode('utf-8').rstrip('"').lstrip('"')
             getfile = getfile.encode('utf-8')
             self.x.execute("INSERT OR IGNORE INTO public_parameters VALUES (?,?,?)",
@@ -108,40 +110,40 @@ class CAKEDataOwner:
 
     def cipher_data(self, data, entries, access_policy):
 
-        groupObj = PairingGroup('SS512')
-        maabe = MaabeRW15(groupObj)
-        api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
+#        groupObj = PairingGroup('SS512')
+#        maabe = MaabeRW15(groupObj)
+#        api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
         response = self.__retrieve_public_parameters__()
-        public_parameters = bytesToObject(response, groupObj)
+        public_parameters = bytesToObject(response, self.groupObj)
         H = lambda x: self.group.hash(x, G2) #questo self c'era già prima, forse va in conflitto con l'uso di self nella funzione, possibile soluzione una funzione statics
         F = lambda x: self.group.hash(x, G2)
         public_parameters["H"] = H
         public_parameters["F"] = F
 
         self.x.execute("SELECT * FROM authorities_public_keys WHERE process_instance=? AND authority_name=?",
-                (str(process_instance_id), 'Auth-1'))
+                (str(self.process_instance_id), 'Auth-1'))
         result = self.x.fetchall()
         pk1 = result[0][3]
-        pk1 = bytesToObject(pk1, groupObj)
+        pk1 = bytesToObject(pk1, self.groupObj)
 
         self.x.execute("SELECT * FROM authorities_public_keys WHERE process_instance=? AND authority_name=?",
-                (str(process_instance_id), 'Auth-2'))
+                (str(self.process_instance_id), 'Auth-2'))
         result = self.x.fetchall()
         pk2 = result[0][3]
-        pk2 = bytesToObject(pk2, groupObj)
+        pk2 = bytesToObject(pk2, self.groupObj)
 
         self.x.execute("SELECT * FROM authorities_public_keys WHERE process_instance=? AND authority_name=?",
-                (str(process_instance_id), 'Auth-3'))
+                (str(self.process_instance_id), 'Auth-3'))
         result = self.x.fetchall()
         pk3 = result[0][3]
-        pk3 = bytesToObject(pk3, groupObj)
+        pk3 = bytesToObject(pk3, self.groupObj)
 
         self.x.execute("SELECT * FROM authorities_public_keys WHERE process_instance=? AND authority_name=?",
-                (str(process_instance_id), 'Auth-4'))
+                (str(self.process_instance_id), 'Auth-4'))
         result = self.x.fetchall()
         pk4 = result[0][3]
-        pk4 = bytesToObject(pk4, groupObj)
+        pk4 = bytesToObject(pk4, self.groupObj)
 
         # public keys authorities
         pk = {'UT': pk1, 'OU': pk2, 'OT': pk3, 'TU': pk4}
@@ -177,18 +179,20 @@ class CAKEDataOwner:
 
         if len(access_policy) != len(entries):
             print('ERROR: The number of policies and entries is different')
+            print("Policy: ", len(access_policy), access_policy)
+            print("Entries: ", len(entries), entries)
             exit()
 
         keys = []
         header = []
         for i in range(len(entries)):
-            key_group = groupObj.random(GT)
-            key_encrypt = groupObj.serialize(key_group)
+            key_group = self.groupObj.random(GT)
+            key_encrypt = self.groupObj.serialize(key_group)
             keys.append(key_encrypt)
-            key_encrypt_deser = groupObj.deserialize(key_encrypt)
+            key_encrypt_deser = self.groupObj.deserialize(key_encrypt)
 
-            ciphered_key = maabe.encrypt(public_parameters, pk, key_encrypt_deser, access_policy[i])
-            ciphered_key_bytes = objectToBytes(ciphered_key, groupObj)
+            ciphered_key = self.maabe.encrypt(public_parameters, pk, key_encrypt_deser, access_policy[i])
+            ciphered_key_bytes = objectToBytes(ciphered_key, self.groupObj)
             ciphered_key_bytes_string = ciphered_key_bytes.decode('utf-8')
 
             ## Possibility to clean the code here. This check can be done outside the 'for loop'
@@ -210,7 +214,16 @@ class CAKEDataOwner:
             for field in entry:
                 cipher_field = cryptocode.encrypt(field, str(keys[i]))
                 ciphered_fields.append(cipher_field)
-                cipher = cryptocode.encrypt(data[field], str(keys[i]))
+                try:
+                    cipher = cryptocode.encrypt(data[field], str(keys[i]))
+                except:
+                    print(f'ERROR: The field {field} is not present in the data')
+                    print("Data: ", data)
+                    print("Type of data", type(data))
+                    print("Field: ", field)
+                    print("Keys", keys)
+                    print("i: ", i)
+                    exit()
                 json_file_ciphered[cipher_field] = cipher
             header[i]['Fields'] = ciphered_fields
 
@@ -218,7 +231,7 @@ class CAKEDataOwner:
         now = int(now.strftime("%Y%m%d%H%M%S%f"))
         random.seed(now)
         message_id = random.randint(1, 2 ** 64)
-        metadata = {'sender': dataOwner_address, 'process_instance_id': int(process_instance_id),
+        metadata = {'sender': dataOwner_address, 'process_instance_id': int(self.process_instance_id),
                     'message_id': message_id}
         print(f'message id: {message_id}')
 
@@ -226,11 +239,11 @@ class CAKEDataOwner:
 
         # encoded = cryptocode.encrypt("Ciao Marzia!", str(key_encrypt1))
 
-        hash_file = api.add_json(json_total)
+        hash_file = self.api.add_json(json_total)
         print(f'ipfs hash: {hash_file}')
 
         self.x.execute("INSERT OR IGNORE INTO messages VALUES (?,?,?,?)",
-                (str(process_instance_id), str(message_id), hash_file, str(json_total)))
+                (str(self.process_instance_id), str(message_id), hash_file, str(json_total)))
         self.conn.commit()
 
         # hash_to_store = "@MARTSIA:" + hash_file
@@ -241,20 +254,3 @@ class CAKEDataOwner:
         #     file.write(json.dumps(ciphered_file))
 
         block_int.send_MessageIPFSLink(dataOwner_address, dataOwner_private_key, message_id, hash_file)
-
-
-if __name__ == '__main__':
-    groupObj = PairingGroup('SS512')
-    maabe = MaabeRW15(groupObj)
-    api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
-    process_instance_id = int(process_instance_id_env)
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-g' ,'--generate', action='store_true')
-    parser.add_argument('-c','--cipher', action='store_true')
-
-    args = parser.parse_args()
-    if args.generate:
-        generate_pp_pk(process_instance_id)
-    if args.cipher:
-        cipher_data(groupObj, maabe, api, process_instance_id)

@@ -4,10 +4,10 @@ import ssl
 import socket 
 from hashlib import sha512
 
-class CAKEBridge:
-    """A communication bridge between the CAKE servers and the API server
+class MARTSIABridge:
+    """A communication bridge between the MARTSIA servers and the API server
 
-    A class to manage the communication between the CAKE servers and the API server
+    A class to manage the communication between the MARTSIA servers and the API server
 
     Attributes:
         connection (sqlite3.Connection): connection to the database
@@ -26,7 +26,7 @@ class CAKEBridge:
         conn (ssl.SSLSocket): connection to the server
     """
     def __init__(self, path_to_db, port, process_instance_id = config('PROCESS_INSTANCE_ID')):
-        """Initialize the CAKEBridge class
+        """Initialize the MARTSIABridge class
 
         Args:
             path_to_db (str): path to the database
@@ -48,15 +48,16 @@ class CAKEBridge:
         self.FORMAT = 'utf-8'
         self.server_sni_hostname = config('SERVER_SNI_HOSTNAME')
         self.DISCONNECT_MESSAGE = "!DISCONNECT"
-        self.SERVER = config('SERVER')
+        self.SERVER = "172.17.0.2"
         self.ADDR = (self.SERVER, self.PORT)
 
         # Set up SSL parameters
-        self.server_cert = 'Keys/server.crt'
-        self.client_cert = 'Keys/client.crt'
-        self.client_key = 'Keys/client.key'
-
+        self.server_cert = 'client-server/Keys/server.crt'
+        self.client_cert = 'client-server/Keys/client.crt'
+        self.client_key = 'client-server/Keys/client.key'
+        print("Connecting to", self.ADDR)
         self.__connect__()
+        print("Connected")
 
     ### Connect to the server
     def __connect__(self):

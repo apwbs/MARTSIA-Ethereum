@@ -80,7 +80,7 @@ class AuthorityServer:
                     connected = False
                 # print(f"[{addr}] {msg}")
                 # conn.send("Msg received!".encode(FORMAT))
-                message = msg.split('||')
+                message = msg.split('§')
                 if message[0] == "Auth-" + str(self.authority_number) + " - Start handshake":
                     number_to_sign = self.generate_number_to_sign(message[1], message[2])
                     conn.send(b'number to sign: ' + str(number_to_sign).encode())
