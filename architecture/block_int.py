@@ -2,8 +2,22 @@ from web3 import Web3
 from decouple import config
 import json
 import base64
+from web3.middleware import geth_poa_middleware  # Avalanche
 
+
+# Goerli
+# web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
+
+# Mumbai
 web3 = Web3(Web3.HTTPProvider("https://polygon-mumbai.g.alchemy.com/v2/q-VbORX6jFRATqTG2feLVLf4rfB7B0aZ"))
+
+# Avalanche
+#web3 = Web3(Web3.HTTPProvider("https://avalanche-fuji.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
+#web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+
+# Sepolia
+# web3 = Web3(Web3.HTTPProvider("https://sepolia.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
+
 compiled_contract_path = 'blockchain/build/contracts/MARTSIAEth.json'
 deployed_contract_address = config('CONTRACT_ADDRESS_MARTSIA')
 
@@ -45,7 +59,6 @@ def __send_txt__(signed_transaction_type):
             __send_txt__(signed_transaction_type)
         else:
             raise Exception("Transaction failed")
-
 
 
 def send_authority_names(authority_address, private_key, process_instance_id, hash_file):
