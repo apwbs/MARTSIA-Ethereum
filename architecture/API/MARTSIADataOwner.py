@@ -22,7 +22,7 @@ dataOwner_private_key = config('DATAOWNER_MANUFACTURER_PRIVATEKEY')
 #process_instance_id_env = config('PROCESS_INSTANCE_ID')
 
 class MARTSIADataOwner:
-    def __init__(self, process_instance_id):
+    def __init__(self, process_instance_id, app_id_messages = config('APPLICATION_ID_MESSAGES')):
         self.authority1_address = config('AUTHORITY1_ADDRESS')
         self.authority2_address = config('AUTHORITY2_ADDRESS')
         self.authority3_address = config('AUTHORITY3_ADDRESS')
@@ -39,6 +39,7 @@ class MARTSIADataOwner:
         self.maabe = MaabeRW15(self.groupObj)
         self.api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
         self.process_instance_id = process_instance_id
+        self.app_id_messages = app_id_messages
 
 
     def __retrieve_data__(self, authority_address):
