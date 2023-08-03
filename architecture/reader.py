@@ -93,7 +93,7 @@ def actual_decryption(remaining, public_parameters, user_sk, ciphertext_dict):
     print(dict(decoded_final))
 
 
-def main(process_instance_id, message_id, slice_id):
+def main(process_instance_id, message_id, slice_id, gid):
     response = retrieve_public_parameters(process_instance_id)
     public_parameters = bytesToObject(response, groupObj)
     H = lambda x: self.group.hash(x, G2)
@@ -131,7 +131,7 @@ def main(process_instance_id, message_id, slice_id):
     user_sk4 = user_sk4.encode()
     user_sk4 = bytesToObject(user_sk4, groupObj)
 
-    user_sk = {'GID': 'bob', 'keys': merge_dicts(user_sk1, user_sk2, user_sk3, user_sk4)}
+    user_sk = {'GID': gid, 'keys': merge_dicts(user_sk1, user_sk2, user_sk3, user_sk4)}
 
     # decrypt
     response = block_int.retrieve_MessageIPFSLink(message_id)
@@ -168,11 +168,11 @@ if __name__ == '__main__':
     parser.add_argument("-m", "--message_id", type=int, help="message id", default=409349685654515625)
     parser.add_argument("-s", "--slice_id", type=int, help="slice id", default=0)
     parser.add_argument("-g", "--generate", action='store_true', help='Handshake')
+    parser.add_argument("--gid", type=str, help="gid", default='bob')
     args = parser.parse_args()
     if args.generate:
         generate_public_parameters(process_instance_id)
     message_id = args.message_id
     slice_id = args.slice_id
-    main(process_instance_id, message_id, slice_id)
-
-    # main(process_instance_id, message_id_caterpillar, slice_id)
+    gid = args.gid
+    main(process_instance_id, message_id, slice_id, gid)
