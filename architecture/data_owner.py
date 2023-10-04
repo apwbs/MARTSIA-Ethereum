@@ -142,6 +142,14 @@ def cipher_data(groupObj, maabe, api, process_instance_id):
     # with open('files/data.json', 'w') as file:
     #     file.write(json.dumps(result))
 
+    file_name = "files/data.json"
+    with open(file_name, "r") as file:
+        json_str = file.read()
+    modified_json_str = json_str.replace("'", '"')
+    modified_data = json.loads(modified_json_str)
+    with open(file_name, "w") as file:
+        json.dump(modified_data, file, indent=4)
+
     f = open('files/data.json')
     data = json.load(f)
     # '(8785437525079851029@UT and MANUFACTURER@UT) and (8785437525079851029@OU and MANUFACTURER@OU)'
@@ -154,12 +162,13 @@ def cipher_data(groupObj, maabe, api, process_instance_id):
     #                  '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
     #                  '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or ('
     #                  'SUPPLIER@OU and MECHANICS@TU)']
-    #entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
- 
+    # entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
+
     #
     access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU '
-                    'and ' + str(process_instance_id_env) + '@OT and ' + str(process_instance_id_env) + '@TU) '
-                    'and (MANUFACTURER@UT or SUPPLIER@OU)']
+                                                                                                      'and ' + str(
+        process_instance_id_env) + '@OT and ' + str(process_instance_id_env) + '@TU) '
+                                                                               'and (MANUFACTURER@UT or SUPPLIER@OU)']
     entries = [list(data.keys())]
 
     if len(access_policy) != len(entries):
@@ -227,6 +236,9 @@ def cipher_data(groupObj, maabe, api, process_instance_id):
     #     ciphered_file['martsia'] = hash_to_store
     #     file.write(json.dumps(ciphered_file))
 
+    with open('files/ciphered_file.json', 'w') as file:
+        file.write(hash_file)
+
     block_int.send_MessageIPFSLink(dataOwner_address, dataOwner_private_key, message_id, hash_file)
 
 
@@ -237,8 +249,8 @@ if __name__ == '__main__':
     process_instance_id = int(process_instance_id_env)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-g' ,'--generate', action='store_true')
-    parser.add_argument('-c','--cipher', action='store_true')
+    parser.add_argument('-g', '--generate', action='store_true')
+    parser.add_argument('-c', '--cipher', action='store_true')
 
     args = parser.parse_args()
     if args.generate:
