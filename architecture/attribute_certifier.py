@@ -13,13 +13,27 @@ attribute_certifier_address = config('ATTRIBUTE_CERTIFIER_ADDRESS')
 private_key = config('ATTRIBUTE_CERTIFIER_PRIVATEKEY')
 
 manufacturer_address = config('DATAOWNER_MANUFACTURER_ADDRESS')
-supplier1_address = config('READER_ADDRESS_SUPPLIER1')
-supplier2_address = config('READER_ADDRESS_SUPPLIER2')
+supplier1_address = config('READER_SUPPLIER1_ADDRESS')
+supplier2_address = config('READER_SUPPLIER2_ADDRESS')
 
 # Connection to SQLite3 attribute_certifier database
 conn = sqlite3.connect('files/attribute_certifier/attribute_certifier.db')
 x = conn.cursor()
 
+def store_process_id_to_env(value):
+    name = 'PROCESS_INSTANCE_ID'
+    with open('.env', 'r', encoding='utf-8') as file:
+        data = file.readlines()
+    edited = False
+    for line in data:
+        if line.startswith(name):
+            data.remove(line)
+            break
+    line = "\n" +  name + "=" + value + "\n"
+    data.append(line)
+
+    with open('.env', 'w', encoding='utf-8') as file:
+        file.writelines(data)
 
 def generate_attributes():
     now = datetime.now()
@@ -53,10 +67,12 @@ def generate_attributes():
     print(f'ipfs hash: {hash_file}')
 
     block_int.send_users_attributes(attribute_certifier_address, private_key, process_instance_id, hash_file)
-
+    
     x.execute("INSERT OR IGNORE INTO user_attributes VALUES (?,?,?)",
               (str(process_instance_id), hash_file, file_to_str))
     conn.commit()
+
+    store_process_id_to_env(str(process_instance_id))
 
 
 if __name__ == "__main__":
