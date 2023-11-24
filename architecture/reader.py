@@ -90,7 +90,6 @@ def actual_decryption(remaining, public_parameters, user_sk, ciphertext_dict):
                  range(len(remaining['Fields']))]
     decoded = [cryptocode.decrypt(ciphertext_dict['body'][x], str(v2)) for x in remaining['Fields']]
     decoded_final = zip(dec_field, decoded)
-    print(dict(decoded_final))
 
 
 def main(process_instance_id, message_id, slice_id, gid):
@@ -139,12 +138,10 @@ def main(process_instance_id, message_id, slice_id, gid):
     getfile = api.cat(ciphertext_link)
     ciphertext_dict = json.loads(getfile)
     sender = response[1]
-    print(ciphertext_dict)
     if ciphertext_dict['metadata']['process_instance_id'] == int(process_instance_id) \
             and ciphertext_dict['metadata']['message_id'] == int(message_id) \
             and ciphertext_dict['metadata']['sender'] == sender:
         slice_check = ciphertext_dict['header']
-        print(len(slice_check))
         if len(slice_check) == 1:
             actual_decryption(ciphertext_dict['header'][0], public_parameters, user_sk, ciphertext_dict)
         elif len(slice_check) > 1:
