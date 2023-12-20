@@ -9,12 +9,12 @@ import ipfshttpclient
 
 api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
-attribute_certifier_address = config('ATTRIBUTE_CERTIFIER_ADDRESS')
-private_key = config('ATTRIBUTE_CERTIFIER_PRIVATEKEY')
+attribute_certifier_address = config('CERTIFIER_ADDRESS')
+private_key = config('CERTIFIER_PRIVATEKEY')
 
-manufacturer_address = config('DATAOWNER_MANUFACTURER_ADDRESS')
-supplier1_address = config('READER_SUPPLIER1_ADDRESS')
-supplier2_address = config('READER_SUPPLIER2_ADDRESS')
+manufacturer_address = config('MANUFACTURER_ADDRESS')
+supplier1_address = config('SUPPLIER1_ADDRESS')
+supplier2_address = config('SUPPLIER2_ADDRESS')
 
 # Connection to SQLite3 attribute_certifier database
 conn = sqlite3.connect('files/attribute_certifier/attribute_certifier.db')
