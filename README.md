@@ -14,4 +14,4 @@ For the Algorand-based implementation, please check out https://github.com/apwbs
 If you want to go back to the main [MARTSIA page please click here](https://github.com/apwbs/MARTSIA).
 
 ### Wiki
-Check the [Wiki](https://github.com/apwbs/MARTSIA-Ethereum/wiki) for a detailed documentation.
+Check out the [Wiki](https://github.com/apwbs/MARTSIA-Ethereum/wiki) for a detailed documentation and step-by-step tutorial to run the system.
