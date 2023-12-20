@@ -6,7 +6,11 @@ accepted at [EDOC 2023](https://www.rug.nl/research/bernoulli/conf/?lang=en) and
 Please find the presented slides on [SlideShare](https://www.slideshare.net/EdoardoMarangone/martsia-enabling-data-confidentiality-for-blockchainbased-process-execution).
 An extended version of the paper is available on arXiv: 
 “[Enabling Data Confidentiality with Public Blockchains](https://arxiv.org/abs/2308.03791)”.
+
+## Algorand
 For the Algorand-based implementation, please check out https://github.com/apwbs/MARTSIA-Algorand.
+
+## MARTSIA MAIN PAGE
 If you want to go back to the main [MARTSIA page please click here](https://github.com/apwbs/MARTSIA).
 
 ## Wiki
