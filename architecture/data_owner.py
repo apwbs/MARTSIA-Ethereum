@@ -16,8 +16,8 @@ authority2_address = config('AUTHORITY2_ADDRESS')
 authority3_address = config('AUTHORITY3_ADDRESS')
 authority4_address = config('AUTHORITY4_ADDRESS')
 
-dataOwner_address = config('DATAOWNER_MANUFACTURER_ADDRESS')
-dataOwner_private_key = config('DATAOWNER_MANUFACTURER_PRIVATEKEY')
+dataOwner_address = config('MANUFACTURER_ADDRESS')
+dataOwner_private_key = config('MANUFACTURER_PRIVATEKEY')
 
 process_instance_id_env = config('PROCESS_INSTANCE_ID')
 
@@ -43,6 +43,7 @@ def generate_pp_pk(process_instance_id):
     pk1 = api.cat(data[2])
     pk1 = pk1.decode('utf-8').rstrip('"').lstrip('"')
     pk1 = pk1.encode('utf-8')
+
     x.execute("INSERT OR IGNORE INTO authorities_public_keys VALUES (?,?,?,?)",
               (str(process_instance_id), 'Auth-1', data[2], pk1))
     conn.commit()
@@ -89,6 +90,8 @@ def generate_pp_pk(process_instance_id):
 def retrieve_public_parameters(process_instance_id):
     x.execute("SELECT * FROM public_parameters WHERE process_instance=?", (str(process_instance_id),))
     result = x.fetchall()
+    if not result:
+        return None
     public_parameters = result[0][2]
     return public_parameters
 
@@ -142,34 +145,36 @@ def cipher_data(groupObj, maabe, api, process_instance_id):
     # with open('files/data.json', 'w') as file:
     #     file.write(json.dumps(result))
 
-    file_name = "files/data.json"
-    with open(file_name, "r") as file:
-        json_str = file.read()
-    modified_json_str = json_str.replace("'", '"')
-    modified_data = json.loads(modified_json_str)
-    with open(file_name, "w") as file:
-        json.dump(modified_data, file, indent=4)
+    # file_name = "files/data.json"
+    # with open(file_name, "r") as file:
+    #     json_str = file.read()
+    # modified_json_str = json_str.replace("'", '"')
+    # modified_data = json.loads(modified_json_str)
+    # with open(file_name, "w") as file:
+    #     json.dump(modified_data, file, indent=4)
 
     f = open('files/data.json')
     data = json.load(f)
-    # '(8785437525079851029@UT and MANUFACTURER@UT) and (8785437525079851029@OU and MANUFACTURER@OU)'
-    # access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
-    #                  '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or '
-    #                  'SUPPLIER@OU)',
-    #                  '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
-    #                  '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or ('
-    #                  'SUPPLIER@OU and ELECTRONICS@OT)',
-    #                  '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
-    #                  '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or ('
-    #                  'SUPPLIER@OU and MECHANICS@TU)']
-    # entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
+    ## '(8785437525079851029@UT and MANUFACTURER@UT) and (8785437525079851029@OU and MANUFACTURER@OU)'
+    access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
+                     '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or '
+                     'SUPPLIER@OU)',
+                     '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
+                     '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or ('
+                     'SUPPLIER@OU and ELECTRONICS@OT)',
+                     '(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU and ' + str(process_instance_id_env) + '@OT and '
+                     '' + str(process_instance_id_env) + '@TU) and (MANUFACTURER@UT or ('
+                     'SUPPLIER@OU and MECHANICS@TU)']
+    print(access_policy)
+    exit()
+    entries = [['ID', 'SortAs', 'GlossTerm'], ['Acronym', 'Abbrev'], ['Specs', 'Dates']]
 
-    #
-    access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU '
-                                                                                                      'and ' + str(
-        process_instance_id_env) + '@OT and ' + str(process_instance_id_env) + '@TU) '
-                                                                               'and (MANUFACTURER@UT or SUPPLIER@OU)']
-    entries = [list(data.keys())]
+    
+    # access_policy = ['(' + str(process_instance_id_env) + '@UT and ' + str(process_instance_id_env) + '@OU '
+    #                                                                                                   'and ' + str(
+    #     process_instance_id_env) + '@OT and ' + str(process_instance_id_env) + '@TU) '
+    #                                                                            'and (MANUFACTURER@UT or SUPPLIER@OU)']
+    # entries = [list(data.keys())]
 
     if len(access_policy) != len(entries):
         print('ERROR: The number of policies and entries is different')
@@ -254,6 +259,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
     if args.generate:
-        generate_pp_pk(process_instance_id)
+        if not retrieve_public_parameters(process_instance_id):
+            generate_pp_pk(process_instance_id)
     if args.cipher:
         cipher_data(groupObj, maabe, api, process_instance_id)

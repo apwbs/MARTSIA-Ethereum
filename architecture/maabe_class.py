@@ -127,10 +127,7 @@ class MaabeRW15(ABEncMultiAuth):
         """
         policy = self.util.createPolicy(ct['policy'])
         coefficients = self.util.getCoefficients(policy)
-        print(policy)
-        print(sk['keys'].keys())
         pruned_list = self.util.prune(policy, sk['keys'].keys())
-        print(pruned_list)
 
         if not pruned_list:
             raise Exception("You don't have the required attributes for decryption!")

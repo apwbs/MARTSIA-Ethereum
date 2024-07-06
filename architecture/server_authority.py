@@ -105,7 +105,7 @@ class AuthorityServer:
             conn = context.wrap_socket(newsocket, server_side=True)
             thread = threading.Thread(target=self.handle_client, args=(conn, fromaddr))
             thread.start()
-            print(f"[ACTIVE CONNECTIONS] {threading.activeCount() - 1}")
+            print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
 
 
 print("[STARTING] server is starting...")
@@ -120,9 +120,9 @@ if args.authority < 1 or args.authority > number_of_authorities:
 
 HEADER = 64
 PORT = 5060 + args.authority - 1
-server_cert = 'client-server/Keys/server.crt'
-server_key = 'client-server/Keys/server.key'
-client_certs = 'client-server/Keys/client.crt'
+server_cert = 'Keys/server.crt'
+server_key = 'Keys/server.key'
+client_certs = 'Keys/client.crt'
 SERVER = socket.gethostbyname(socket.gethostname())
 ADDR = (SERVER, PORT)
 FORMAT = 'utf-8'

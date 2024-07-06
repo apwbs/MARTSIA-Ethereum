@@ -15,7 +15,7 @@ authority3_address = config('AUTHORITY3_ADDRESS')
 authority4_address = config('AUTHORITY4_ADDRESS')
 
 process_instance_id_env = config('PROCESS_INSTANCE_ID')
-message_id_caterpillar = 0
+# message_id_caterpillar = 0
 
 # Connection to SQLite3 data_owner database
 conn = sqlite3.connect('files/reader/reader.db')
@@ -60,7 +60,7 @@ def generate_public_parameters(process_instance_id):
     check_parameters.append(data[1])
 
     if len(set(check_authorities)) == 1 and len(set(check_parameters)) == 1:
-        getfile = api.cat(check_parameters[0])        
+        getfile = api.cat(check_parameters[0])
         x.execute("INSERT OR IGNORE INTO public_parameters VALUES (?,?,?)",
                   (str(process_instance_id), check_parameters[0], getfile))
         conn.commit()
@@ -90,9 +90,10 @@ def actual_decryption(remaining, public_parameters, user_sk, ciphertext_dict):
                  range(len(remaining['Fields']))]
     decoded = [cryptocode.decrypt(ciphertext_dict['body'][x], str(v2)) for x in remaining['Fields']]
     decoded_final = zip(dec_field, decoded)
+    print(dict(decoded_final))
 
 
-def main(process_instance_id, message_id, slice_id, gid):
+def start(process_instance_id, message_id, slice_id, gid):
     response = retrieve_public_parameters(process_instance_id)
     public_parameters = bytesToObject(response, groupObj)
     H = lambda x: self.group.hash(x, G2)
@@ -150,9 +151,9 @@ def main(process_instance_id, message_id, slice_id, gid):
                     actual_decryption(remaining, public_parameters, user_sk, ciphertext_dict)
 
 
-def set_message_id(message_id_value):
-    global message_id_caterpillar
-    message_id_caterpillar = message_id_value
+# def set_message_id(message_id_value):
+#     global message_id_caterpillar
+#     message_id_caterpillar = message_id_value
 
 
 if __name__ == '__main__':
@@ -161,15 +162,17 @@ if __name__ == '__main__':
     api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
     process_instance_id = int(process_instance_id_env)
-    parser =argparse.ArgumentParser(description="Reader details", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("-m", "--message_id", type=int, help="message id", default=409349685654515625)
+    parser = argparse.ArgumentParser(description="Reader details",
+                                     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument("-m", "--message_id", type=int, help="message id", default=0)
     parser.add_argument("-s", "--slice_id", type=int, help="slice id", default=0)
-    parser.add_argument("-g", "--generate", action='store_true', help='Handshake')
-    parser.add_argument("--gid", type=str, help="gid", default='bob')
+    parser.add_argument("-g", "--generate", action="store_true", help='Retrieval')
+    parser.add_argument("--gid", type=str, help="gid", default="bob")
     args = parser.parse_args()
     if args.generate:
         generate_public_parameters(process_instance_id)
-    message_id = args.message_id
-    slice_id = args.slice_id
-    gid = args.gid
-    main(process_instance_id, message_id, slice_id, gid)
+    else:
+        message_id = args.message_id
+        slice_id = args.slice_id
+        gid = args.gid
+        start(process_instance_id, message_id, slice_id, gid)

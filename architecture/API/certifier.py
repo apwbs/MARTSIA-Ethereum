@@ -15,14 +15,14 @@ authorities_names = ['UT', 'OU', 'OT', 'TU']
 class Certifier():
     """ Manage the certification of the attributes of the actors
 
-    A collectio of static methods to read the public keys of the actors, 
-    the public key of the SKM and to certify the attributes of the actors
+    A collection of static methods to generate the rsa keys of the actors
+    and to certify the attributes of the actors
     """
+
     def certify(actors, roles):
         """ Read the public keys of actors and SKM, and certify the attributes of the actors
 
-        Read the public keys of each actor in actors, then read the public key of the SKM 
-        and certify the attributes of the actors
+        Read the public keys of each actor in actors and certify the attributes of the actors
 
         Args:
             actors (list): list of actors
@@ -32,7 +32,7 @@ class Certifier():
             int : process instance id
         """
         for actor in actors:
-            Certifier.__read_public_key__(actor)
+            Certifier.generate_rsa_keys(actor)
         return Certifier.__attribute_certification__(roles)
 
     def read_public_key(actors):
@@ -42,8 +42,7 @@ class Certifier():
             actors (list): list of actors
         """
         for actor in actors:
-            Certifier.__read_public_key__(actor)
-
+            Certifier.generate_rsa_keys(actor)
 
     def attribute_certification(roles):
         """ Certify the attributes of the actors
@@ -59,11 +58,10 @@ class Certifier():
         """
         Certifier.__attribute_certification__(roles)
 
+    def generate_rsa_keys(actor_name):
+        """ Generate the public and private rsa key of an actor
 
-    def __read_public_key__(actor_name):
-        """ Read the public and private key of an actor
-
-        Read the public and private key of an actor from .env and store them in a SQLite3 database
+        Generate the public and private key of an actor from .env and store them in a SQLite3 database
         and on the blockchain on the PKReadersContract  
 
         Args:
@@ -71,7 +69,7 @@ class Certifier():
         """
         api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001')
 
-        print("Reading keys of " + actor_name)
+        print("Generate keys for " + actor_name)
         reader_address = config(actor_name + '_ADDRESS')
         private_key = config(actor_name + '_PRIVATEKEY')
 
@@ -82,6 +80,12 @@ class Certifier():
         # # Connection to SQLite3 data_owner database
         connection = sqlite3.connect('files/data_owner/data_owner.db')
         y = connection.cursor()
+
+        x.execute("SELECT * FROM rsa_private_key WHERE reader_address=?", (reader_address,))
+        result = x.fetchall()
+        if result:
+            print("rsa key already present")
+            exit()
 
         keyPair = RSA.generate(bits=1024)
 
@@ -95,30 +99,27 @@ class Certifier():
 
         block_int.send_publicKey_readers(reader_address, private_key, hash_file)
 
-        # reader address not necessary because each user has one key. Since we use only one 'reader/client' for all the
-        # readers, we need a distinction.
-        x.execute("INSERT OR IGNORE INTO rsa_private_key VALUES (?,?,?)", (reader_address, str(keyPair.n), str(keyPair.d)))
+        x.execute("INSERT OR IGNORE INTO rsa_private_key VALUES (?,?,?)",
+                  (reader_address, str(keyPair.n), str(keyPair.d)))
         conn.commit()
 
         x.execute("INSERT OR IGNORE INTO rsa_public_key VALUES (?,?,?,?)",
-                (reader_address, hash_file, str(keyPair.n), str(keyPair.e)))
+                  (reader_address, hash_file, str(keyPair.n), str(keyPair.e)))
         conn.commit()
 
-    def __store_process_id_to_env__(value):
+    def __store_process_id_to_env__(process_instance_id):
         name = 'PROCESS_INSTANCE_ID'
         with open('.env', 'r', encoding='utf-8') as file:
             data = file.readlines()
-        edited = False
         for line in data:
             if line.startswith(name):
                 data.remove(line)
                 break
-        line = "\n" +  name + "=" + value + "\n"
+        line = "\n" + name + "=" + process_instance_id + "\n"
         data.append(line)
 
         with open('.env', 'w', encoding='utf-8') as file:
             file.writelines(data)
-
 
     def __attribute_certification__(roles):
         """ Certify the attributes of the actors
@@ -133,13 +134,14 @@ class Certifier():
             int : the process instance id of the certification process
         """
 
-        api = ipfshttpclient.connect('/ip4/127.0.0.1/tcp/5001') # Connect to local IPFS node (creo un nodo locale di ipfs)
+        api = ipfshttpclient.connect(
+            '/ip4/127.0.0.1/tcp/5001')  # Connect to local IPFS node
 
         certifier_address = config('ATTRIBUTE_CERTIFIER_ADDRESS')
         certifier_private_key = config('ATTRIBUTE_CERTIFIER_PRIVATEKEY')
 
         # Connection to SQLite3 attribute_certifier database
-        conn = sqlite3.connect('files/attribute_certifier/attribute_certifier.db') # Connect to the database
+        conn = sqlite3.connect('files/attribute_certifier/attribute_certifier.db')  # Connect to the database
         x = conn.cursor()
 
         now = datetime.now()
@@ -150,8 +152,8 @@ class Certifier():
 
         dict_users = {}
         for actor, list_roles in roles.items():
-            dict_users[config(actor + '_ADDRESS')] = [str(process_instance_id)+'@'+name for name in authorities_names] + [role for role in list_roles]
-        
+            dict_users[config(actor + '_ADDRESS')] = [str(process_instance_id) + '@' + name for name in
+                                                      authorities_names] + [role for role in list_roles]
 
         f = io.StringIO()
         dict_users_dumped = json.dumps(dict_users)
@@ -163,16 +165,13 @@ class Certifier():
 
         hash_file = api.add_json(file_to_str)
         print(f'ipfs hash: {hash_file}')
-        
-        block_int.send_users_attributes(config('ATTRIBUTE_CERTIFIER_ADDRESS'), config('ATTRIBUTE_CERTIFIER_PRIVATEKEY'), process_instance_id, hash_file)
-        
+
+        block_int.send_users_attributes(certifier_address, certifier_private_key, process_instance_id, hash_file)
+
         x.execute("INSERT OR IGNORE INTO user_attributes VALUES (?,?,?)",
-                (str(process_instance_id), hash_file, file_to_str))
+                  (str(process_instance_id), hash_file, file_to_str))
         conn.commit()
 
         Certifier.__store_process_id_to_env__(str(process_instance_id))
 
         return process_instance_id
-    
-    
-    

@@ -57,9 +57,9 @@ def send(msg):
         connection.commit()
 
 
-manufacturer = config('DATAOWNER_MANUFACTURER_ADDRESS')
-electronics = config('READER_SUPPLIER1_ADDRESS')
-mechanics = config('READER_SUPPLIER2_ADDRESS')
+manufacturer = config('MANUFACTURER_ADDRESS')
+electronics = config('SUPPLIER1_ADDRESS')
+mechanics = config('SUPPLIER2_ADDRESS')
 process_instance_id_env = config('PROCESS_INSTANCE_ID')
 
 reader_address = manufacturer
@@ -89,11 +89,11 @@ PORT = 5060 + args.authority - 1
 FORMAT = 'utf-8'
 server_sni_hostname = 'Sapienza'
 DISCONNECT_MESSAGE = "!DISCONNECT"
-SERVER = "172.17.0.2"
+SERVER = "192.168.1.21"
 ADDR = (SERVER, PORT)
-server_cert = 'client-server/Keys/server.crt'
-client_cert = 'client-server/Keys/client.crt'
-client_key = 'client-server/Keys/client.key'
+server_cert = 'Keys/server.crt'
+client_cert = 'Keys/client.crt'
+client_key = 'Keys/client.key'
 
 """
 creation and connection of the secure channel using SSL protocol

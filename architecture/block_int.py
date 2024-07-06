@@ -2,21 +2,26 @@ from web3 import Web3
 from decouple import config
 import json
 import base64
-from web3.middleware import geth_poa_middleware  # Avalanche
+
+# from web3.middleware import geth_poa_middleware  # Avalanche
 
 
 # Goerli
 # web3 = Web3(Web3.HTTPProvider("https://goerli.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
 
 # Mumbai
-web3 = Web3(Web3.HTTPProvider("https://polygon-mumbai.g.alchemy.com/v2/q-VbORX6jFRATqTG2feLVLf4rfB7B0aZ"))
+# web3 = Web3(Web3.HTTPProvider("https://polygon-mumbai.g.alchemy.com/v2/q-VbORX6jFRATqTG2feLVLf4rfB7B0aZ"))
 
 # Avalanche
-#web3 = Web3(Web3.HTTPProvider("https://avalanche-fuji.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
-#web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+# web3 = Web3(Web3.HTTPProvider("https://avalanche-fuji.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
+# web3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
 # Sepolia
 # web3 = Web3(Web3.HTTPProvider("https://sepolia.infura.io/v3/059e54a94bca48d893f1b2d45470c002"))
+
+# Ganache
+ganache_url = "http://127.0.0.1:7545"
+web3 = Web3(Web3.HTTPProvider(ganache_url))
 
 compiled_contract_path = 'blockchain/build/contracts/MARTSIAEth.json'
 deployed_contract_address = config('CONTRACT_ADDRESS_MARTSIA')
@@ -43,11 +48,12 @@ def activate_contract(attribute_certifier_address, private_key):
     message = contract.functions.updateMajorityCount().buildTransaction(tx)
     signed_transaction = web3.eth.account.sign_transaction(message, private_key)
     transaction_hash = __send_txt__(signed_transaction.rawTransaction)
-        
+
     print(f'tx_hash: {web3.toHex(transaction_hash)}')
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
     if verbose:
         print(tx_receipt)
+
 
 def __send_txt__(signed_transaction_type):
     try:
@@ -235,6 +241,7 @@ def send_publicKey_link(authority_address, private_key, process_instance_id, has
     tx_receipt = web3.eth.wait_for_transaction_receipt(transaction_hash, timeout=600)
     if verbose:
         print(tx_receipt)
+
 
 def retrieve_publicKey_link(eth_address, process_instance_id):
     with open(compiled_contract_path) as file:
