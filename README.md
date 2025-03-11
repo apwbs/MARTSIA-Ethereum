@@ -7,11 +7,11 @@ Please find the presented slides on [SlideShare](https://www.slideshare.net/Edoa
 An extended version of the paper is available on arXiv: 
 “[Enabling Data Confidentiality with Public Blockchains](https://arxiv.org/abs/2308.03791)”.
 
-### Algorand
-For the Algorand-based implementation, please check out https://github.com/apwbs/MARTSIA-Algorand.
-
 ### MARTSIA MAIN PAGE
 If you want to go back to the main [MARTSIA page please click here](https://github.com/apwbs/MARTSIA).
 
 ### Wiki
 Check out the [Wiki](https://github.com/apwbs/MARTSIA-Ethereum/wiki) for a detailed documentation and step-by-step tutorial to run the system.
+
+### MARTSIA Demo
+For a Demo of MARTSIA check this repository [MARTSIA-Demo](https://github.com/apwbs/MARTSIA-Demo).
